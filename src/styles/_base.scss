@@ -1,0 +1,35 @@
+@import 'variables';
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  color: $color-text;
+  background: $color-bg;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* container */
+.container {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: $space-4;
+}
+
+/* headings */
+.h1 {
+  font-size: $font-size-xl;
+  font-weight: 600;
+  margin: $space-4 0;
+}
+.h2 { font-size: $font-size-lg; margin: $space-3 0; }
