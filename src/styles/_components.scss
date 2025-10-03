@@ -161,8 +161,8 @@
 .fab {
   position: fixed;
   right: $space-4;
-  bottom: 80px; // Navbar üstünde kalacak şekilde
-  width: 56px; // Mobilde biraz küçük
+  bottom: 80px;
+  width: 56px;
   height: 56px;
   border-radius: $radius-full;
   display: flex;
@@ -186,10 +186,9 @@
   }
   
   .material-symbols-outlined {
-    font-size: 24px; // Mobilde küçük icon
+    font-size: 24px;
   }
   
-  // Tablet ve üzeri için büyük boyutlar
   @media (min-width: 768px) {
     right: $space-6;
     bottom: calc($space-20 + $space-4);
@@ -231,9 +230,9 @@
     }
     
     &.is-inactive {
-      background: rgba(255, 255, 255, 0.08); // Daha belirgin arka plan
-      color: $color-text-primary; // Daha koyu text rengi
-      border: 1px solid rgba(255, 255, 255, 0.1); // Hafif border
+      background: rgba(255, 255, 255, 0.08);
+      color: $color-text-primary;
+      border: 1px solid rgba(255, 255, 255, 0.1);
       
       &:hover {
         background: $color-surface-hover;

@@ -166,14 +166,13 @@ export default {
     },
     gramEquivalents() {
       return {
-        'ceyrek': 1.75,  // 1 çeyrek = 1.75 gram
-        'tam': 7,        // 1 tam = 7 gram
-        '22_ayar': 1,    // 1 gram = 1 gram
-        '24_ayar': 1,    // 1 gram = 1 gram
+        'ceyrek': 1.75,
+        'tam': 7,
+        '22_ayar': 1,
+        '24_ayar': 1,
       }
     },
     groupedItemsWithValue() {
-      // itemsWithValue'dan aynı type ve unit'e sahip olanları grupla
       const groups = {}
       this.items.forEach(it => {
         const key = it.type + '|' + (it.unit || '')
@@ -183,24 +182,20 @@ export default {
           groups[key].amount += it.amount
         }
       })
-      // Her grup için value'yu hesapla
       return Object.values(groups).map(it => {
         let value, formatted
 
         if (this.selected === 'ALTIN') {
-          // Altın türleri için özel hesaplama
           const goldEquivalent = this.getGoldEquivalent(it)
           if (goldEquivalent) {
             value = goldEquivalent.value
             formatted = goldEquivalent.formatted
           } else {
-            // Para birimleri ve diğer varlıklar için altın karşılığı
             const valueTL = this.getValueInTL(it)
             value = this.convertFromTL(valueTL, 'ALTIN')
             formatted = value.toLocaleString('tr-TR', { maximumFractionDigits: 3 }) + ' gr'
           }
         } else {
-          // Normal para birimi hesaplamaları
           const valueTL = this.getValueInTL(it)
           value = this.convertFromTL(valueTL, this.selected)
           formatted = this.formatValue(value, this.selected)
@@ -216,19 +211,16 @@ export default {
         let value, formatted
 
         if (this.selected === 'ALTIN') {
-          // Altın türleri için özel hesaplama
           const goldEquivalent = this.getGoldEquivalent(it)
           if (goldEquivalent) {
             value = goldEquivalent.value
             formatted = goldEquivalent.formatted
           } else {
-            // Para birimleri ve diğer varlıklar için altın karşılığı
             const valueTL = this.getValueInTL(it)
             value = this.convertFromTL(valueTL, 'ALTIN')
             formatted = this.formatValue(value, 'ALTIN')
           }
         } else {
-          // Normal para birimi hesaplamaları
           const valueTL = this.getValueInTL(it)
           value = this.convertFromTL(valueTL, this.selected)
           formatted = this.formatValue(value, this.selected)
@@ -241,17 +233,14 @@ export default {
       })
     },
     assetTypes() {
-      // Kullanıcıya gösterilecek varlık türleri
       return this.$translations.assetTypes
     },
     showUnitInput() {
-      // Sadece bazı türler için birim sorulsun (ör: altınlar için 'gram', diğerleri için otomatik)
-      return false // Gerekirse true yapabilirsin
+      return false
     }
   },
   watch: {
     selected(newVal) {
-      // Selected değeri değiştiğinde slider'ı güncelle
       const index = this.tabs.indexOf(newVal)
       if (index !== -1 && index !== this.selectedIndex) {
         this.selectedIndex = index
@@ -262,7 +251,6 @@ export default {
     this.$store.dispatch('fetchPrices')
   },
   methods: {
-    // Utility: Herhangi bir varlığın TL değerini hesapla
     getValueInTL(item) {
       if (item.type === 'tl') {
         return item.amount
@@ -275,7 +263,6 @@ export default {
       }
     },
 
-    // Utility: TL değerini istenen para birimine çevir
     convertFromTL(valueTL, targetCurrency) {
       switch (targetCurrency) {
         case 'TL':
@@ -291,7 +278,6 @@ export default {
       }
     },
 
-    // Utility: Değeri belirtilen para biriminde formatla
     formatValue(value, currency) {
       switch (currency) {
         case 'TL':
@@ -307,7 +293,6 @@ export default {
       }
     },
 
-    // Utility: Altın türleri için gram karşılığını hesapla
     getGoldEquivalent(item) {
       if (this.gramEquivalents[item.type]) {
         const gramEquivalent = this.gramEquivalents[item.type]
@@ -335,7 +320,6 @@ export default {
     
     deleteItem({ item, amount, description }) {
       let toRemove = amount
-      // En eski eklenenden başlayarak sil
       const indicesToRemove = []
       this.items.forEach((it, idx) => {
         if (toRemove > 0 && it.type === item.type && it.unit === item.unit) {
@@ -344,7 +328,6 @@ export default {
           toRemove -= removeCount
         }
       })
-      // Silme işlemlerini uygula (en sondan başa doğru ki indexler kaymasın)
       indicesToRemove.reverse().forEach(({ idx, removeCount }) => {
         this.$store.dispatch('decreaseItemAmount', { index: idx, amount: removeCount, description })
       })
@@ -370,14 +353,12 @@ export default {
       this.$toast(this.$t('itemAdded'), 'success')
     },
     defaultUnitForType(type) {
-      // Otomatik birim ataması
       if (type === 'usd' || type === 'eur') return 'adet'
       if (type === '24_ayar' || type === '22_ayar' || type === 'gumus') return 'gr'
       if (type === 'ceyrek' || type === 'tam') return 'adet'
       return ''
     },
     
-    // Slider Methods
     nextCurrency() {
       if (this.selectedIndex < this.tabs.length - 1) {
         this.selectedIndex++
@@ -427,7 +408,6 @@ export default {
       return value
     },
     
-    // Touch Events
     handleTouchStart(event) {
       this.touchStartX = event.touches[0].clientX
       this.touchStartY = event.touches[0].clientY
@@ -442,10 +422,9 @@ export default {
       const deltaX = this.touchStartX - touchX
       const deltaY = this.touchStartY - touchY
       
-      // Yatay swipe mı dikey swipe mı kontrol et
       if (Math.abs(deltaX) > Math.abs(deltaY)) {
         this.isSwiping = true
-        event.preventDefault() // Scroll'u engelle
+        event.preventDefault()
       }
     },
     
@@ -458,10 +437,8 @@ export default {
       
       if (Math.abs(deltaX) > minSwipeDistance) {
         if (deltaX > 0) {
-          // Sola swipe - sonraki currency
           this.nextCurrency()
         } else {
-          // Sağa swipe - önceki currency
           this.previousCurrency()
         }
       }
@@ -508,7 +485,7 @@ export default {
   max-width: 500px;
   margin: 0 auto;
   padding: 0 $space-4;
-  min-height: 44px; // Header'a minimum yükseklik ver
+  min-height: 44px;
 }
 
 .header-title {
@@ -521,8 +498,8 @@ export default {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: -0.02em;
-  margin: 0; // Portfolio yazısının margin'ini kaldır
-  line-height: 1; // Line height'ı düzelt
+  margin: 0;
+  line-height: 1;
 }
 
 .header-actions {
@@ -587,10 +564,9 @@ export default {
 .main-content {
   flex-grow: 1;
   overflow-y: auto;
-  padding-bottom: 70px; // Navbar yüksekliği + biraz extra space
+  padding-bottom: 70px;
   animation: fadeIn 0.6s ease-out;
   
-  // Tablet ve üzeri için daha fazla padding
   @media (min-width: 768px) {
     padding-bottom: calc($space-20 + $space-4);
   }
@@ -605,8 +581,8 @@ export default {
 /* Modern Total Slider */
 .total-section {
   text-align: center;
-  padding: $space-4 0; // Padding'i azalttım
-  margin: $space-4 0; // Margin'i azalttım
+  padding: $space-4 0;
+  margin: $space-4 0;
 }
 
 .total-slider {
@@ -631,7 +607,7 @@ export default {
   min-width: 100%;
   background: $gradient-primary;
   border-radius: $radius-2xl;
-  padding: $space-6; // Padding'i azalttım
+  padding: $space-6;
   box-shadow: $shadow-xl, $shadow-glow;
   position: relative;
   overflow: hidden;
@@ -641,7 +617,7 @@ export default {
   align-items: center;
   justify-content: center;
   gap: $space-3;
-  min-height: 140px; // Minimum yükseklik
+  min-height: 140px;
   
   &::before {
     content: '';
@@ -982,11 +958,11 @@ export default {
   backdrop-filter: blur($blur-xl);
   -webkit-backdrop-filter: blur($blur-xl);
   border-top: 1px solid $color-border;
-  margin: 0; // Mobilde margin kaldır
-  border-radius: 0; // Mobilde border-radius kaldır
+  margin: 0;
+  border-radius: 0;
   box-shadow: $shadow-xl;
   position: relative;
-  min-height: 60px; // Minimum yükseklik belirle
+  min-height: 60px;
   
   &::before {
     content: '';
@@ -998,7 +974,6 @@ export default {
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
   }
   
-  // Tablet ve üzeri için styling
   @media (min-width: 768px) {
     margin: 0 $space-4 $space-4 $space-4;
     border-radius: $radius-2xl $radius-2xl $radius-xl $radius-xl;
@@ -1019,7 +994,7 @@ export default {
   outline: none;
   cursor: pointer;
   flex: 1;
-  padding: $space-1 $space-2; // Padding'i küçült
+  padding: $space-1 $space-2;
   border-radius: $radius-lg;
   transition: $transition-normal;
   position: relative;
@@ -1039,8 +1014,8 @@ export default {
   }
   
   .material-symbols-outlined {
-    font-size: 20px; // Icon boyutunu küçült
-    margin-bottom: 2px; // Margin'i azalt
+    font-size: 20px;
+    margin-bottom: 2px;
     transition: $transition-normal;
     position: relative;
     z-index: 1;
@@ -1059,7 +1034,6 @@ export default {
     }
   }
   
-  // Tablet ve üzeri için büyük boyutlar
   @media (min-width: 768px) {
     padding: $space-2;
     
@@ -1083,14 +1057,13 @@ export default {
 }
 
 .nav-label {
-  font-size: 10px; // Daha küçük font boyutu
+  font-size: 10px;
   font-weight: $font-weight-semibold;
   text-transform: uppercase;
-  letter-spacing: 0.02em; // Letter spacing'i azalt
+  letter-spacing: 0.02em;
   position: relative;
   z-index: 1;
   
-  // Tablet ve üzeri için büyük boyut
   @media (min-width: 768px) {
     font-size: $font-size-xs;
     letter-spacing: 0.05em;
@@ -1121,13 +1094,13 @@ export default {
 
 /* Modern History Section */
 .history-section {
-  margin-top: $space-3; // Margin'i azalttım
+  margin-top: $space-3;
   background: $color-glass;
   backdrop-filter: blur($blur-md);
   border: 1px solid $color-border;
-  border-radius: $radius-xl; // Border radius'u küçülttüm
+  border-radius: $radius-xl;
   box-shadow: $shadow-lg;
-  padding: $space-4; // Padding'i azalttım
+  padding: $space-4;
   position: relative;
   overflow: hidden;
   
@@ -1351,13 +1324,13 @@ export default {
 }
 /* Modern Settings Section */
 .settings-section {
-  margin-top: $space-3; // Margin'i azalttım
+  margin-top: $space-3;
   background: $color-glass;
   backdrop-filter: blur($blur-md);
   border: 1px solid $color-border;
-  border-radius: $radius-xl; // Border radius'u küçülttüm
+  border-radius: $radius-xl;
   box-shadow: $shadow-lg;
-  padding: $space-4; // Padding'i azalttım
+  padding: $space-4;
   position: relative;
   overflow: hidden;
   
@@ -1379,9 +1352,9 @@ export default {
 }
 
 .settings-title {
-  font-size: $font-size-lg; // Font size'ı küçülttüm
+  font-size: $font-size-lg;
   font-weight: $font-weight-bold;
-  margin-bottom: $space-3; // Margin'i azalttım
+  margin-bottom: $space-3;
   color: $color-text-primary;
   display: flex;
   align-items: center;
@@ -1389,7 +1362,7 @@ export default {
   
   &::before {
     content: '⚙️';
-    font-size: $font-size-base; // Icon size'ı küçülttüm
+    font-size: $font-size-base;
   }
   
   @media (min-width: 768px) {
@@ -1405,7 +1378,7 @@ export default {
 .settings-form {
   display: flex;
   flex-direction: column;
-  gap: $space-2; // Gap'i azalttım
+  gap: $space-2;
   
   @media (min-width: 768px) {
     gap: $space-4;
@@ -1415,13 +1388,13 @@ export default {
 .settings-row {
   display: flex;
   align-items: center;
-  gap: $space-2; // Gap'i azalttım
-  padding: $space-2; // Padding'i azalttım
+  gap: $space-2;
+  padding: $space-2;
   background: $color-surface;
   border: 1px solid $color-border-light;
-  border-radius: $radius-md; // Border radius'u küçülttüm
+  border-radius: $radius-md;
   transition: $transition-normal;
-  min-height: 50px; // Minimum yükseklik
+  min-height: 50px;
   
   &:hover {
     background: $color-surface-hover;
@@ -1431,8 +1404,8 @@ export default {
     flex: 1;
     font-weight: $font-weight-semibold;
     color: $color-text-primary;
-    font-size: $font-size-xs; // Font size'ı küçülttüm
-    min-width: 0; // Flex ile küçülmesine izin ver
+    font-size: $font-size-xs;
+    min-width: 0;
     
     @media (min-width: 768px) {
       font-size: $font-size-sm;
@@ -1441,20 +1414,20 @@ export default {
   
   input {
     flex: 1;
-    padding: $space-2; // Padding'i azalttım
+    padding: $space-2;
     border: 1px solid $color-border;
-    border-radius: $radius-sm; // Border radius'u küçülttüm
-    font-size: $font-size-xs; // Font size'ı küçülttüm
+    border-radius: $radius-sm;
+    font-size: $font-size-xs;
     background: $color-glass;
     color: $color-text-primary;
     backdrop-filter: blur($blur-sm);
     transition: $transition-normal;
-    min-width: 0; // Flex ile küçülmesine izin ver
+    min-width: 0;
     
     &:focus {
       outline: none;
       border-color: $color-primary;
-      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1); // Shadow'u küçülttüm
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
       background: $color-surface-hover;
     }
     

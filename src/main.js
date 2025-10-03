@@ -8,10 +8,7 @@ import './styles/main.scss'
 
 const app = createApp(App)
 
-// Global translation mixin
 app.mixin(translationMixin)
-
-// Global toast method
 app.config.globalProperties.$toast = useToast().showToast
 
 app.use(router)

@@ -69,10 +69,10 @@ export default {
     },
     iconClass(type) {
       const map = {
-        '24_ayar': 'paid', // gold
-        '22_ayar': 'paid', // gold
-        'ceyrek': 'paid', // gold
-        'tam': 'paid', // gold
+        '24_ayar': 'paid',
+        '22_ayar': 'paid',
+        'ceyrek': 'paid',
+        'tam': 'paid',
         'usd': 'attach_money',
         'eur': 'euro',
         'tl': 'currency_lira',
@@ -210,7 +210,7 @@ export default {
 .asset-list {
   display: flex;
   flex-direction: column;
-  gap: $space-2; // Gap'i azalttım
+  gap: $space-2;
   
   @media (min-width: 768px) {
     gap: $space-3;
@@ -232,15 +232,15 @@ export default {
 .asset-card-content {
   display: flex;
   align-items: center;
-  padding: $space-3; // Padding'i azalttım
+  padding: $space-3;
   background: $color-glass;
   backdrop-filter: blur($blur-md);
   border: 1px solid $color-border;
-  border-radius: $radius-lg; // Border radius'u küçülttüm
+  border-radius: $radius-lg;
   transition: $transition-normal;
   position: relative;
   overflow: hidden;
-  min-height: 60px; // Minimum yükseklik belirledim
+  min-height: 60px;
   
   &::before {
     content: '';
@@ -252,7 +252,6 @@ export default {
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
   }
   
-  // Tablet ve üzeri için daha fazla padding
   @media (min-width: 768px) {
     padding: $space-4;
     border-radius: $radius-xl;
@@ -261,18 +260,17 @@ export default {
 }
 
 .asset-icon {
-  width: 40px; // Mobilde küçük icon
+  width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: $radius-md;
-  margin-right: $space-3; // Margin'i azalttım
-  box-shadow: $shadow-sm; // Shadow'u azalttım
-  font-size: 18px; // Font size'ı küçülttüm
-  flex-shrink: 0; // Icon boyutunu sabit tut
+  margin-right: $space-3;
+  box-shadow: $shadow-sm;
+  font-size: 18px;
+  flex-shrink: 0;
   
-  // Tablet ve üzeri için büyük icon
   @media (min-width: 768px) {
     width: 48px;
     height: 48px;
@@ -320,9 +318,9 @@ export default {
 .asset-name {
   font-weight: $font-weight-bold;
   color: $color-text-primary;
-  font-size: $font-size-sm; // Mobilde küçük font
-  margin-bottom: 2px; // Margin'i azalttım
-  line-height: 1.1; // Line height'ı azalttım
+  font-size: $font-size-sm;
+  margin-bottom: 2px;
+  line-height: 1.1;
   
   @media (min-width: 768px) {
     font-size: $font-size-base;
@@ -332,7 +330,7 @@ export default {
 }
 
 .asset-amount {
-  font-size: $font-size-xs; // Mobilde daha küçük
+  font-size: $font-size-xs;
   color: $color-text-secondary;
   font-weight: $font-weight-medium;
   line-height: 1.1;
@@ -344,7 +342,7 @@ export default {
 
 .asset-value {
   text-align: right;
-  margin-right: $space-2; // Margin'i azalttım
+  margin-right: $space-2;
   
   @media (min-width: 768px) {
     margin-right: $space-3;
@@ -354,8 +352,8 @@ export default {
 .value-amount {
   font-weight: $font-weight-bold;
   color: $color-text-primary;
-  font-size: $font-size-sm; // Mobilde küçük font
-  line-height: 1.1; // Line height'ı azalttım
+  font-size: $font-size-sm;
+  line-height: 1.1;
   
   @media (min-width: 768px) {
     font-size: $font-size-base;
@@ -369,11 +367,11 @@ export default {
   outline: none;
   cursor: pointer;
   color: $color-danger;
-  font-size: 18px; // Mobilde küçük icon
+  font-size: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: $space-1; // Padding'i azalttım
+  padding: $space-1;
   border-radius: $radius-sm;
   transition: $transition-normal;
   flex-shrink: 0;

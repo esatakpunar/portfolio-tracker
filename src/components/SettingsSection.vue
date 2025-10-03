@@ -56,7 +56,6 @@ export default {
     },
     async refreshPrices() {
       await this.$store.dispatch('fetchPrices')
-      // Fiyatlar güncellendikten sonra inputlar anında güncellensin
       this.editablePrices = { ...this.$store.state.prices }
       this.$toast(this.$t('pricesRefreshed'), 'success')
     },

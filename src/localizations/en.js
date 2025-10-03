@@ -1,12 +1,8 @@
 export default {
-  // Header
   portfolio: 'Portfolio',
-  
-  // Navigation
   history: 'History',
   settings: 'Settings',
   
-  // Asset Types
   assetTypes: {
     '22_ayar': '22 Carat Gold (gram)',
     '24_ayar': '24 Carat Gold (gram)',
@@ -18,7 +14,6 @@ export default {
     'gumus': 'Silver (gram)'
   },
   
-  // Currencies
   currencies: {
     TL: 'Turkish Lira',
     USD: 'US Dollar',
@@ -26,7 +21,6 @@ export default {
     ALTIN: 'Gold (gram)'
   },
   
-  // Add Item Modal
   addNewAsset: 'Add New Asset',
   addNewAssetSubtitle: 'Add a new investment to your portfolio',
   assetType: 'Asset Type',
@@ -41,7 +35,6 @@ export default {
   add: 'Add',
   cancel: 'Cancel',
   
-  // Delete Modal
   confirmDelete: 'Confirm Delete',
   confirmDeleteMessage: 'Are you sure you want to delete this asset from your portfolio?',
   deleteAmount: 'Amount to Delete',
@@ -51,30 +44,25 @@ export default {
   deleteReasonPlaceholder: 'Why are you deleting?',
   delete: 'Delete',
   
-  // Portfolio Section
   total: 'Total',
   assets: 'Assets',
   noAssets: 'No assets added yet',
   addFirstAsset: 'Add your first asset',
   
-  // History Section
   historyTitle: 'Transaction History',
   noHistory: 'No transaction history yet',
   
-  // Settings Section
   settingsTitle: 'Settings',
   refreshPrices: 'Refresh Prices',
   resetAllData: 'Reset All Data',
   language: 'Language',
   
-  // Toast Messages
   itemAdded: 'Asset added successfully',
   itemDeleted: 'Asset deleted successfully',
   pricesRefreshed: 'Prices updated',
   allDataReset: 'All data has been reset',
   languageChanged: 'Language changed',
   
-  // Common
   close: 'Close',
   save: 'Save',
   loading: 'Loading...',

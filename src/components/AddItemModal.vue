@@ -90,8 +90,7 @@ export default {
   },
   computed: {
     showUnitInput() {
-      // Sadece bazı türler için birim sorulsun (ör: altınlar için 'gram', diğerleri için otomatik)
-      return false // Gerekirse true yapabilirsin
+      return false
     },
     canAdd() {
       return this.addType && this.addAmount > 0

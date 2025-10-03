@@ -1,12 +1,9 @@
 export default {
-  // Header
   portfolio: 'Portfolio',
   
-  // Navigation
   history: 'Verlauf',
   settings: 'Einstellungen',
   
-  // Asset Types
   assetTypes: {
     '22_ayar': '22 Karat Gold (Gramm)',
     '24_ayar': '24 Karat Gold (Gramm)',
@@ -18,7 +15,6 @@ export default {
     'gumus': 'Silber (Gramm)'
   },
   
-  // Currencies
   currencies: {
     TL: 'Türkische Lira',
     USD: 'US-Dollar',
@@ -26,7 +22,6 @@ export default {
     ALTIN: 'Gold (Gramm)'
   },
   
-  // Add Item Modal
   addNewAsset: 'Neuen Vermögenswert hinzufügen',
   addNewAssetSubtitle: 'Fügen Sie eine neue Investition zu Ihrem Portfolio hinzu',
   assetType: 'Vermögensart',
@@ -41,7 +36,6 @@ export default {
   add: 'Hinzufügen',
   cancel: 'Abbrechen',
   
-  // Delete Modal
   confirmDelete: 'Löschen bestätigen',
   confirmDeleteMessage: 'Sind Sie sicher, dass Sie diesen Vermögenswert aus Ihrem Portfolio löschen möchten?',
   deleteAmount: 'Zu löschende Menge',
@@ -51,30 +45,25 @@ export default {
   deleteReasonPlaceholder: 'Warum löschen Sie?',
   delete: 'Löschen',
   
-  // Portfolio Section
   total: 'Gesamt',
   assets: 'Vermögenswerte',
   noAssets: 'Noch keine Vermögenswerte hinzugefügt',
   addFirstAsset: 'Fügen Sie Ihren ersten Vermögenswert hinzu',
   
-  // History Section
   historyTitle: 'Transaktionsverlauf',
   noHistory: 'Noch kein Transaktionsverlauf',
   
-  // Settings Section
   settingsTitle: 'Einstellungen',
   refreshPrices: 'Preise aktualisieren',
   resetAllData: 'Alle Daten zurücksetzen',
   language: 'Sprache',
   
-  // Toast Messages
   itemAdded: 'Vermögenswert erfolgreich hinzugefügt',
   itemDeleted: 'Vermögenswert erfolgreich gelöscht',
   pricesRefreshed: 'Preise aktualisiert',
   allDataReset: 'Alle Daten wurden zurückgesetzt',
   languageChanged: 'Sprache geändert',
   
-  // Common
   close: 'Schließen',
   save: 'Speichern',
   loading: 'Laden...',

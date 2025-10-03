@@ -1,4 +1,3 @@
-// Translation mixin that provides $t method to all components
 export default {
   computed: {
     $translations() {

@@ -64,7 +64,6 @@ export function priceLabel(key, language = 'tr') {
   return translations[language]?.assetTypes[key] || key
 }
 
-// Utility function: Herhangi bir varlığın TL değerini hesapla
 function getItemValueInTL(item, prices) {
   if (item.type === 'tl') {
     return item.amount
@@ -77,7 +76,6 @@ function getItemValueInTL(item, prices) {
   }
 }
 
-// Utility function: TL değerini istenen para birimine çevir
 function convertFromTL(valueTL, targetCurrency, prices) {
   switch (targetCurrency) {
     case 'TL':
@@ -113,10 +111,8 @@ export default createStore({
       
       return state.items.reduce((sum, item) => {
         if (currency === 'ALTIN' && gramEquivalents[item.type]) {
-          // Altın türleri için direkt gram karşılığı
           return sum + (item.amount * gramEquivalents[item.type])
         } else {
-          // Tüm diğer durumlar için: TL'ye çevir, sonra hedef para birimine çevir
           const valueTL = getItemValueInTL(item, state.prices)
           const convertedValue = convertFromTL(valueTL, currency, state.prices)
           return sum + convertedValue
@@ -128,7 +124,6 @@ export default createStore({
     ADD_ITEM(state, payload) {
       state.items.push(payload)
       saveItems(state.items)
-      // History kaydı ekle
       state.history.unshift({
         type: 'add',
         item: payload,
@@ -141,7 +136,6 @@ export default createStore({
       const removed = state.items[index]
       state.items.splice(index, 1)
       saveItems(state.items)
-      // History kaydı ekle
       if (removed) {
         state.history.unshift({
           type: 'remove',
@@ -162,10 +156,8 @@ export default createStore({
     RESET_ALL(state) {
       state.items = []
       state.history = []
-      // Fiyatları sıfırlama - güncel fiyatlar korunacak
       saveItems([])
       saveHistory([])
-      // savePrices(state.prices) - fiyatları localStorage'dan silmiyoruz
     },
     DECREASE_ITEM_AMOUNT(state, { index, amount, description }) {
       const item = state.items[index]
@@ -175,7 +167,6 @@ export default createStore({
       } else {
         state.items.splice(index, 1)
       }
-      // History kaydı ekle
       state.history.unshift({
         type: 'remove',
         item: { ...item, amount },
@@ -196,7 +187,6 @@ export default createStore({
     updatePrice({ commit }, { key, value }) { commit('UPDATE_PRICE', { key, value }) },
     async resetAll({ commit, dispatch }) { 
       commit('RESET_ALL')
-      // Reset sonrası güncel fiyatları fetch et
       await dispatch('fetchPrices')
     },
     decreaseItemAmount({ commit }, payload) { commit('DECREASE_ITEM_AMOUNT', payload) },
@@ -205,7 +195,7 @@ export default createStore({
       try {
         const response = await axios.get('https://finans.truncgil.com/v4/today.json')
         const data = response.data
-        // Sadece gerekli key'ler
+       
         const prices = {
           usd: Number(data.USD?.Buying) || state.prices.usd || PRICES.usd,
           eur: Number(data.EUR?.Buying) || state.prices.eur || PRICES.eur,
@@ -218,7 +208,6 @@ export default createStore({
         commit('SET_PRICES', prices)
         console.log('Fiyatlar güncellendi:', prices)
       } catch (error) {
-        // Hata durumunda eğer state'te fiyat yoksa mock data kullan
         console.error('Fiyatlar alınamadı:', error)
         if (!state.prices || Object.keys(state.prices).length === 0) {
           console.log('Fallback fiyatlar kullanılıyor')

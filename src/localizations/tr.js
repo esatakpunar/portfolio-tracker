@@ -1,12 +1,8 @@
 export default {
-  // Header
   portfolio: 'Portföy',
-  
-  // Navigation
   history: 'Geçmiş',
   settings: 'Ayarlar',
   
-  // Asset Types
   assetTypes: {
     '22_ayar': 'Gram Altın (22 Ayar)',
     '24_ayar': 'Gram Altın (24 Ayar)',
@@ -18,7 +14,6 @@ export default {
     'gumus': 'Gümüş (gram)'
   },
   
-  // Currencies
   currencies: {
     TL: 'Türk Lirası',
     USD: 'Dolar (USD)',
@@ -26,7 +21,7 @@ export default {
     ALTIN: 'Altın (gram)'
   },
   
-  // Add Item Modal
+ 
   addNewAsset: 'Yeni Varlık Ekle',
   addNewAssetSubtitle: 'Portföyünüze yeni bir yatırım ekleyin',
   assetType: 'Varlık Türü',
@@ -41,7 +36,6 @@ export default {
   add: 'Ekle',
   cancel: 'İptal',
   
-  // Delete Modal
   confirmDelete: 'Silmeyi Onayla',
   confirmDeleteMessage: 'Bu varlığı portföyünüzden silmek istediğinizden emin misiniz?',
   deleteAmount: 'Silinecek Miktar',
@@ -51,30 +45,25 @@ export default {
   deleteReasonPlaceholder: 'Neden siliyorsunuz?',
   delete: 'Sil',
   
-  // Portfolio Section
   total: 'Toplam',
   assets: 'Varlıklar',
   noAssets: 'Henüz varlık eklenmemiş',
   addFirstAsset: 'İlk varlığınızı ekleyin',
   
-  // History Section
   historyTitle: 'İşlem Geçmişi',
   noHistory: 'Henüz işlem geçmişi yok',
   
-  // Settings Section
   settingsTitle: 'Ayarlar',
   refreshPrices: 'Fiyatları Yenile',
   resetAllData: 'Tüm Verileri Sıfırla',
   language: 'Dil',
   
-  // Toast Messages
   itemAdded: 'Varlık başarıyla eklendi',
   itemDeleted: 'Varlık başarıyla silindi',
   pricesRefreshed: 'Fiyatlar güncellendi',
   allDataReset: 'Tüm veriler sıfırlandı',
   languageChanged: 'Dil değiştirildi',
   
-  // Common
   close: 'Kapat',
   save: 'Kaydet',
   loading: 'Yükleniyor...',
