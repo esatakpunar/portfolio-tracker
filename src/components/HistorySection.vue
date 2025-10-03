@@ -4,8 +4,12 @@
     <ul class="history-list">
       <li v-for="(h, i) in history.slice(0, 10)" :key="i" :class="['history-item', h.type]">
         <span class="history-type">
-          <span v-if="h.type === 'add'" class="material-symbols-outlined add-icon">add_circle</span>
-          <span v-else class="material-symbols-outlined remove-icon">remove_circle</span>
+          <span v-if="h.type === 'add'" class="icon-container add-icon">
+            <span class="material-symbols-outlined">trending_up</span>
+          </span>
+          <span v-else class="icon-container remove-icon">
+            <span class="material-symbols-outlined">trending_down</span>
+          </span>
         </span>
         <span class="history-info">
           <b>{{ priceLabel(h.item.type) }}</b> {{ h.item.amount }} {{ h.item.unit }}

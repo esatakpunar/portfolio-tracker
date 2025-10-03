@@ -1139,84 +1139,191 @@ export default {
 .history-item {
   display: flex;
   align-items: center;
-  gap: $space-2; // Gap'i azalttım
-  padding: $space-2; // Padding'i azalttım
+  gap: $space-3;
+  padding: $space-3;
   background: $color-surface;
   border: 1px solid $color-border-light;
-  border-radius: $radius-md; // Border radius'u küçülttüm
-  font-size: $font-size-xs; // Font size'ı küçülttüm
-  transition: $transition-normal;
-  min-height: 44px; // Minimum yükseklik
+  border-radius: $radius-lg;
+  font-size: $font-size-sm;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 56px;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  }
   
   &:hover {
     background: $color-surface-hover;
-    transform: translateX(2px);
+    transform: translateX(4px) translateY(-1px);
+    border-color: $color-border;
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.1),
+      0 2px 8px rgba(0, 0, 0, 0.05);
   }
   
   &.empty {
     color: $color-text-muted;
     justify-content: center;
     font-style: italic;
-    padding: $space-6; // Empty state padding'i azalttım
-  }
-  
-  @media (min-width: 768px) {
-    gap: $space-3;
-    padding: $space-3;
-    border-radius: $radius-lg;
-    font-size: $font-size-sm;
+    padding: $space-8;
     min-height: auto;
     
+    &:hover {
+      transform: none;
+    }
+  }
+  
+  @media (max-width: 767px) {
+    gap: $space-2;
+    padding: $space-2;
+    border-radius: $radius-md;
+    font-size: $font-size-xs;
+    min-height: 48px;
+    
     &.empty {
-      padding: $space-8;
+      padding: $space-6;
     }
   }
 }
 
 .history-type {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px; // Boyutu küçülttüm
-  height: 28px;
-  border-radius: $radius-sm;
-  font-size: 14px; // Font size'ı küçülttüm
   flex-shrink: 0;
   
-  @media (min-width: 768px) {
-    width: 32px;
-    height: 32px;
-    border-radius: $radius-md;
-    font-size: 16px;
+  .icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: $radius-lg;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: xor;
+      -webkit-mask-composite: xor;
+    }
+    
+    .material-symbols-outlined {
+      font-size: 18px;
+      font-weight: 600;
+      z-index: 1;
+      transition: transform 0.2s ease;
+    }
+    
+    &:hover {
+      transform: scale(1.1) rotate(5deg);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      
+      .material-symbols-outlined {
+        transform: scale(1.1);
+      }
+    }
+    
+    @media (min-width: 768px) {
+      width: 40px;
+      height: 40px;
+      
+      .material-symbols-outlined {
+        font-size: 20px;
+      }
+    }
   }
 }
 
 .add-icon {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: $color-text-primary;
-  box-shadow: $shadow-sm;
+  background: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
+  color: white;
+  box-shadow: 
+    0 4px 15px rgba(16, 185, 129, 0.3),
+    0 2px 8px rgba(16, 185, 129, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  
+  &:hover {
+    background: linear-gradient(135deg, #047857 0%, #059669 50%, #10b981 100%);
+    box-shadow: 
+      0 6px 20px rgba(16, 185, 129, 0.4),
+      0 3px 12px rgba(16, 185, 129, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
 }
 
 .remove-icon {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: $color-text-primary;
-  box-shadow: $shadow-sm;
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #f87171 100%);
+  color: white;
+  box-shadow: 
+    0 4px 15px rgba(239, 68, 68, 0.3),
+    0 2px 8px rgba(239, 68, 68, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  
+  &:hover {
+    background: linear-gradient(135deg, #b91c1c 0%, #dc2626 50%, #ef4444 100%);
+    box-shadow: 
+      0 6px 20px rgba(239, 68, 68, 0.4),
+      0 3px 12px rgba(239, 68, 68, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
 }
 
 .history-info {
   flex: 1;
   color: $color-text-secondary;
   font-weight: $font-weight-medium;
+  line-height: 1.4;
+  
+  b {
+    color: $color-text-primary;
+    font-weight: $font-weight-semibold;
+  }
+  
+  span {
+    display: inline-block;
+    margin-left: $space-1;
+    padding: 2px 6px;
+    background: rgba($color-primary, 0.1);
+    border-radius: $radius-sm;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+    color: $color-primary;
+    text-transform: lowercase;
+  }
 }
 
 .history-date {
   color: $color-text-muted;
   font-size: $font-size-xs;
   font-weight: $font-weight-medium;
-  min-width: 90px;
+  min-width: 85px;
   text-align: right;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.025em;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 4px 8px;
+  border-radius: $radius-sm;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  
+  @media (min-width: 768px) {
+    min-width: 100px;
+    font-size: $font-size-xs;
+  }
 }
 /* Modern Settings Section */
 .settings-section {
