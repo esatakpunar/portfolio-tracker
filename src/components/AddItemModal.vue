@@ -108,7 +108,7 @@ export default {
       })
     },
     defaultUnitForType(type) {
-      if (type === 'usd' || type === 'eur') return 'adet'
+      if (type === 'usd' || type === 'eur' || type === 'tl') return 'adet'
       if (type === '24_ayar' || type === '22_ayar' || type === 'gumus') return 'gr'
       if (type === 'ceyrek' || type === 'tam') return 'adet'
       return ''

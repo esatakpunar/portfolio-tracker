@@ -14,6 +14,7 @@ export default {
     'tam': 'Ganzes Gold',
     'usd': 'Dollar (USD)',
     'eur': 'Euro (EUR)',
+    'tl': 'Türkische Lira (TL)',
     'gumus': 'Silber (Gramm)'
   },
   

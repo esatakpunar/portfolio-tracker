@@ -75,6 +75,7 @@ export default {
         'tam': 'paid', // gold
         'usd': 'attach_money',
         'eur': 'euro',
+        'tl': 'currency_lira',
         'gumus': 'circle'
       }
       return map[type] || 'help'
@@ -87,6 +88,7 @@ export default {
         'tam': 'mdi-gold',
         'usd': 'mdi-currency-usd',
         'eur': 'mdi-currency-eur',
+        'tl': 'mdi-currency-try',
         'gumus': 'mdi-silver'
       }
       return map[type] || 'mdi-help'
@@ -99,6 +101,7 @@ export default {
         'tam': 'icon-gold',
         'usd': 'icon-usd',
         'eur': 'icon-euro',
+        'tl': 'icon-tl',
         'gumus': 'icon-silver'
       }
       return map[type] || 'icon-default'
@@ -128,7 +131,7 @@ export default {
       const lang = this.$store.state.currentLanguage
       const translations = unitTranslations[lang] || unitTranslations.tr
       
-      if (type === 'usd' || type === 'eur' || type === 'ceyrek' || type === 'tam') {
+      if (type === 'usd' || type === 'eur' || type === 'tl' || type === 'ceyrek' || type === 'tam') {
         return translations.piece
       }
       return translations.gram
@@ -291,6 +294,11 @@ export default {
   
   &.icon-euro {
     background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: $color-text-primary;
+  }
+  
+  &.icon-tl {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
     color: $color-text-primary;
   }
   

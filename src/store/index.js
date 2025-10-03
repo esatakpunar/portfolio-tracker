@@ -10,6 +10,7 @@ const PRICES = {
   "tam": 16000,
   "usd": 34,
   "eur": 36,
+  "tl": 1,
   "gumus": 30
 }
 
@@ -63,6 +64,35 @@ export function priceLabel(key, language = 'tr') {
   return translations[language]?.assetTypes[key] || key
 }
 
+// Utility function: Herhangi bir varlığın TL değerini hesapla
+function getItemValueInTL(item, prices) {
+  if (item.type === 'tl') {
+    return item.amount
+  } else if (item.type === 'usd') {
+    return item.amount * (prices.usd || 0)
+  } else if (item.type === 'eur') {
+    return item.amount * (prices.eur || 0)
+  } else {
+    return item.amount * (prices[item.type] || 0)
+  }
+}
+
+// Utility function: TL değerini istenen para birimine çevir
+function convertFromTL(valueTL, targetCurrency, prices) {
+  switch (targetCurrency) {
+    case 'TL':
+      return valueTL
+    case 'USD':
+      return valueTL / (prices.usd || 1)
+    case 'EUR':
+      return valueTL / (prices.eur || 1)
+    case 'ALTIN':
+      return valueTL / (prices['24_ayar'] || 1)
+    default:
+      return valueTL
+  }
+}
+
 export default createStore({
   state: {
     items: loadItems(),
@@ -72,7 +102,7 @@ export default createStore({
   },
   getters: {
     currentTranslations: state => translations[state.currentLanguage] || translations.tr,
-    totalTL: state => state.items.reduce((sum, item) => sum + item.amount * state.prices[item.type], 0),
+    totalTL: state => state.items.reduce((sum, item) => sum + getItemValueInTL(item, state.prices), 0),
     totalIn: (state, getters) => (currency) => {
       const gramEquivalents = {
         'ceyrek': 1.75,
@@ -82,27 +112,15 @@ export default createStore({
       }
       
       return state.items.reduce((sum, item) => {
-        const priceTL = state.prices[item.type] || 0
-        const itemValueTL = item.amount * priceTL
-        
-        if (currency === 'TL') {
-          return sum + itemValueTL
-        } else if (currency === 'USD') {
-          return sum + (itemValueTL / (state.prices.usd || 1))
-        } else if (currency === 'EUR') {
-          return sum + (itemValueTL / (state.prices.eur || 1))
-        } else if (currency === 'ALTIN') {
-          // Altın türleri için gram karşılığını hesapla
-          if (gramEquivalents[item.type]) {
-            const gramEquivalent = gramEquivalents[item.type]
-            return sum + (item.amount * gramEquivalent)
-          } 
-          // Para birimleri ve diğer varlıklar için altın karşılığını hesapla
-          else {
-            return sum + (itemValueTL / (state.prices['24_ayar'] || 1))
-          }
+        if (currency === 'ALTIN' && gramEquivalents[item.type]) {
+          // Altın türleri için direkt gram karşılığı
+          return sum + (item.amount * gramEquivalents[item.type])
+        } else {
+          // Tüm diğer durumlar için: TL'ye çevir, sonra hedef para birimine çevir
+          const valueTL = getItemValueInTL(item, state.prices)
+          const convertedValue = convertFromTL(valueTL, currency, state.prices)
+          return sum + convertedValue
         }
-        return sum
       }, 0)
     }
   },

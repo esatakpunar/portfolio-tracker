@@ -185,36 +185,25 @@ export default {
       })
       // Her grup için value'yu hesapla
       return Object.values(groups).map(it => {
-        const priceTL = this.prices[it.type] || 0
-        let value = 0
-        let formatted = ''
-        if (this.selected === 'TL') {
-          value = it.amount * priceTL
-          formatted = value.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 2 })
-        } else if (this.selected === 'USD') {
-          value = (it.amount * priceTL) / this.prices.usd
-          formatted = value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 })
-        } else if (this.selected === 'EUR') {
-          value = (it.amount * priceTL) / this.prices.eur
-          formatted = value.toLocaleString('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 })
-        } else if (this.selected === 'ALTIN') {
-          // Altın türleri için gram karşılığını hesapla
-          if (this.gramEquivalents[it.type]) {
-            const gramEquivalent = this.gramEquivalents[it.type]
-            value = it.amount * gramEquivalent
-            formatted = value.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) + ' gr'
-          } 
-          // Para birimleri ve diğer varlıklar için altın karşılığını hesapla
-          else {
-            const valueTL = it.amount * priceTL
-            value = valueTL / this.prices['24_ayar']
-            
-            if (it.type === 'gumus') {
-              formatted = value.toLocaleString('tr-TR', { maximumFractionDigits: 3 }) + ' gr'
-            } else {
-              formatted = value.toLocaleString('tr-TR', { maximumFractionDigits: 3 }) + ' gr'
-            }
+        let value, formatted
+
+        if (this.selected === 'ALTIN') {
+          // Altın türleri için özel hesaplama
+          const goldEquivalent = this.getGoldEquivalent(it)
+          if (goldEquivalent) {
+            value = goldEquivalent.value
+            formatted = goldEquivalent.formatted
+          } else {
+            // Para birimleri ve diğer varlıklar için altın karşılığı
+            const valueTL = this.getValueInTL(it)
+            value = this.convertFromTL(valueTL, 'ALTIN')
+            formatted = value.toLocaleString('tr-TR', { maximumFractionDigits: 3 }) + ' gr'
           }
+        } else {
+          // Normal para birimi hesaplamaları
+          const valueTL = this.getValueInTL(it)
+          value = this.convertFromTL(valueTL, this.selected)
+          formatted = this.formatValue(value, this.selected)
         }
         return {
           ...it,
@@ -224,37 +213,27 @@ export default {
     },
     itemsWithValue() {
       return this.items.map(it => {
-        const priceTL = this.prices[it.type] || 0
-        let value = 0
-        let formatted = ''
-        if (this.selected === 'TL') {
-          value = it.amount * priceTL
-          formatted = value.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 2 })
-        } else if (this.selected === 'USD') {
-          value = (it.amount * priceTL) / this.prices.usd
-          formatted = value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 })
-        } else if (this.selected === 'EUR') {
-          value = (it.amount * priceTL) / this.prices.eur
-          formatted = value.toLocaleString('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 })
-        } else if (this.selected === 'ALTIN') {
-          // Altın türleri için gram karşılığını hesapla
-          if (this.gramEquivalents[it.type]) {
-            const gramEquivalent = this.gramEquivalents[it.type]
-            value = it.amount * gramEquivalent
-            formatted = value.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) + ' gr'
-          } 
-          // Para birimleri ve diğer varlıklar için altın karşılığını hesapla
-          else {
-            const valueTL = it.amount * priceTL
-            value = valueTL / this.prices['24_ayar']
-            
-            if (it.type === 'gumus') {
-              formatted = value.toLocaleString('tr-TR', { maximumFractionDigits: 3 }) + ' gr altın karşılığı'
-            } else {
-              formatted = value.toLocaleString('tr-TR', { maximumFractionDigits: 3 }) + ' gr altın karşılığı'
-            }
+        let value, formatted
+
+        if (this.selected === 'ALTIN') {
+          // Altın türleri için özel hesaplama
+          const goldEquivalent = this.getGoldEquivalent(it)
+          if (goldEquivalent) {
+            value = goldEquivalent.value
+            formatted = goldEquivalent.formatted
+          } else {
+            // Para birimleri ve diğer varlıklar için altın karşılığı
+            const valueTL = this.getValueInTL(it)
+            value = this.convertFromTL(valueTL, 'ALTIN')
+            formatted = this.formatValue(value, 'ALTIN')
           }
+        } else {
+          // Normal para birimi hesaplamaları
+          const valueTL = this.getValueInTL(it)
+          value = this.convertFromTL(valueTL, this.selected)
+          formatted = this.formatValue(value, this.selected)
         }
+
         return {
           ...it,
           value: formatted
@@ -283,6 +262,63 @@ export default {
     this.$store.dispatch('fetchPrices')
   },
   methods: {
+    // Utility: Herhangi bir varlığın TL değerini hesapla
+    getValueInTL(item) {
+      if (item.type === 'tl') {
+        return item.amount
+      } else if (item.type === 'usd') {
+        return item.amount * this.prices.usd
+      } else if (item.type === 'eur') {
+        return item.amount * this.prices.eur
+      } else {
+        return item.amount * (this.prices[item.type] || 0)
+      }
+    },
+
+    // Utility: TL değerini istenen para birimine çevir
+    convertFromTL(valueTL, targetCurrency) {
+      switch (targetCurrency) {
+        case 'TL':
+          return valueTL
+        case 'USD':
+          return valueTL / (this.prices.usd || 1)
+        case 'EUR':
+          return valueTL / (this.prices.eur || 1)
+        case 'ALTIN':
+          return valueTL / (this.prices['24_ayar'] || 1)
+        default:
+          return valueTL
+      }
+    },
+
+    // Utility: Değeri belirtilen para biriminde formatla
+    formatValue(value, currency) {
+      switch (currency) {
+        case 'TL':
+          return value.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 2 })
+        case 'USD':
+          return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 })
+        case 'EUR':
+          return value.toLocaleString('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 })
+        case 'ALTIN':
+          return value.toLocaleString('tr-TR', { maximumFractionDigits: 3 }) + ' gr altın karşılığı'
+        default:
+          return value.toString()
+      }
+    },
+
+    // Utility: Altın türleri için gram karşılığını hesapla
+    getGoldEquivalent(item) {
+      if (this.gramEquivalents[item.type]) {
+        const gramEquivalent = this.gramEquivalents[item.type]
+        return {
+          value: item.amount * gramEquivalent,
+          formatted: (item.amount * gramEquivalent).toLocaleString('tr-TR', { maximumFractionDigits: 2 }) + ' gr'
+        }
+      }
+      return null
+    },
+
     getCurrencySymbol(currency) {
       const symbols = {
         'TL': '₺',

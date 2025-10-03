@@ -14,6 +14,7 @@ export default {
     'tam': 'Tam Altın',
     'usd': 'Dolar (USD)',
     'eur': 'Euro (EUR)',
+    'tl': 'Türk Lirası (TL)',
     'gumus': 'Gümüş (gram)'
   },
   
