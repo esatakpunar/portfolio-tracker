@@ -20,8 +20,8 @@ export default {
   // Currencies
   currencies: {
     TL: 'Türk Lirası',
-    USD: 'Amerikan Doları',
-    EUR: 'Avro',
+    USD: 'Dolar (USD)',
+    EUR: 'Euro (EUR)',
     ALTIN: 'Altın (gram)'
   },
   
