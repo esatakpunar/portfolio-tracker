@@ -1294,18 +1294,6 @@ export default {
     color: $color-text-primary;
     font-weight: $font-weight-semibold;
   }
-  
-  span {
-    display: inline-block;
-    margin-left: $space-1;
-    padding: 2px 6px;
-    background: rgba($color-primary, 0.1);
-    border-radius: $radius-sm;
-    font-size: $font-size-xs;
-    font-weight: $font-weight-medium;
-    color: $color-primary;
-    text-transform: lowercase;
-  }
 }
 
 .history-date {

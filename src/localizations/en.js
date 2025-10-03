@@ -59,10 +59,6 @@ export default {
   // History Section
   historyTitle: 'Transaction History',
   noHistory: 'No transaction history yet',
-  actionTypes: {
-    add: 'Added',
-    remove: 'Deleted'
-  },
   
   // Settings Section
   settingsTitle: 'Settings',

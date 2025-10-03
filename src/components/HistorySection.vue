@@ -13,7 +13,6 @@
         </span>
         <span class="history-info">
           <b>{{ priceLabel(h.item.type) }}</b> {{ h.item.amount }} {{ h.item.unit }}
-          <span>{{ $t(`actionTypes.${h.type}`) }}</span>
           <div v-if="h.description" class="history-desc">{{ h.description }}</div>
         </span>
         <span class="history-date">{{ formatDate(h.date) }}</span>

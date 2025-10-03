@@ -59,10 +59,6 @@ export default {
   // History Section
   historyTitle: 'İşlem Geçmişi',
   noHistory: 'Henüz işlem geçmişi yok',
-  actionTypes: {
-    add: 'Eklendi',
-    remove: 'Silindi'
-  },
   
   // Settings Section
   settingsTitle: 'Ayarlar',

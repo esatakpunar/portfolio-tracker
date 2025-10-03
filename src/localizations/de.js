@@ -59,10 +59,6 @@ export default {
   // History Section
   historyTitle: 'Transaktionsverlauf',
   noHistory: 'Noch kein Transaktionsverlauf',
-  actionTypes: {
-    add: 'Hinzugefügt',
-    remove: 'Gelöscht'
-  },
   
   // Settings Section
   settingsTitle: 'Einstellungen',
