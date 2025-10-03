@@ -1,44 +1,40 @@
 <template>
-  <div>
-    <!-- Total -->
-    <div class="total-section">
-      <p class="total-label">Total Value</p>
-      <p class="total-value">{{ totalFormatted }}</p>
-    </div>
-    <!-- Tabs -->
-    <div class="tabs">
-      <button
-        v-for="tab in tabs"
-        :key="tab"
-        @click="$emit('update:selected', tab)"
-        :class="['tab', selected === tab ? 'tab-active' : '']"
-      >
-        {{ tab }}
-      </button>
-    </div>
-    <!-- Asset List -->
-    <div class="asset-list">
+  <div class="portfolio-container">
+    <!-- Modern Asset List -->
+    <div v-if="itemsWithValue.length > 0" class="asset-list animate-fade-in">
       <div
-        v-for="(it,i) in itemsWithValue"
-        :key="i"
+        v-for="(it, i) in itemsWithValue"
+        :key="`${it.type}-${it.unit || 'default'}`"
         class="asset-card"
       >
-        <div :class="['asset-icon', iconBgClass(it.type)]">
-          <span class="material-symbols-outlined">{{ iconClass(it.type) }}</span>
+        <div class="asset-card-content">
+          <div :class="['asset-icon', iconBgClass(it.type)]">
+            <span class="material-symbols-outlined">{{ iconClass(it.type) }}</span>
+          </div>
+          <div class="asset-content">
+            <div class="asset-name">{{ priceLabel(it.type) }}</div>
+            <div class="asset-amount">{{ formatAmount(it.amount) }} {{ it.unit || 'adet' }}</div>
+          </div>
+          <div class="asset-value">
+            <div class="value-amount">{{ it.value }}</div>
+          </div>
+          <button class="delete-icon-btn" @click="openDeleteModal(it, i)">
+            <span class="material-symbols-outlined">delete</span>
+          </button>
         </div>
-        <div class="asset-info">
-          <p class="asset-name">{{ priceLabel(it.type) }}</p>
-          <p class="asset-amount">{{ it.amount }} {{ it.unit }}</p>
-        </div>
-        <div class="asset-value">
-          <p>{{ it.value }}</p>
-        </div>
-        <button class="delete-icon-btn" @click="openDeleteModal(it, i)">
-          <span class="material-symbols-outlined">delete</span>
-        </button>
       </div>
     </div>
-    <!-- Delete Modal -->
+    
+    <!-- Empty State -->
+    <div v-else class="empty-state animate-fade-in">
+      <div class="empty-icon">
+        <span class="material-symbols-outlined">account_balance_wallet</span>
+      </div>
+      <h3 class="empty-title">Portföyünüz Boş</h3>
+      <p class="empty-description">Yatırımlarınızı takip etmek için + butonuna basarak varlık ekleyin.</p>
+    </div>
+    
+    <!-- Modern Delete Modal -->
     <DeleteItemModal
       :visible="showDeleteModal"
       :item="deleteTarget"
@@ -120,62 +116,252 @@ export default {
         description
       })
       this.showDeleteModal = false
+    },
+    formatAmount(amount) {
+      return amount.toLocaleString('tr-TR', { maximumFractionDigits: 4 })
     }
   }
 }
 </script>
-<style scoped>
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.25);
+<style lang="scss" scoped>
+@import '../styles/variables';
+
+.portfolio-container {
+  margin-top: $space-2;
+}
+
+/* Modern Empty State */
+.empty-state {
+  text-align: center;
+  padding: $space-12 $space-6;
+  margin-top: $space-8;
+  background: $color-glass;
+  backdrop-filter: blur($blur-md);
+  border: 1px solid $color-border;
+  border-radius: $radius-2xl;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  }
+}
+
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto $space-6 auto;
+  background: $gradient-cool;
+  border-radius: $radius-full;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  box-shadow: $shadow-lg;
+  
+  .material-symbols-outlined {
+    font-size: 40px;
+    color: $color-text-primary;
+  }
 }
-.modal {
-  background: #fff;
-  border-radius: 1rem;
-  padding: 2rem 1.5rem 1.5rem 1.5rem;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
-  min-width: 260px;
-  max-width: 90vw;
-  text-align: center;
+
+.empty-title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: $space-3;
 }
-.modal input[type="number"] {
-  width: 80px;
-  font-size: 1.2rem;
-  padding: 0.3rem 0.5rem;
-  margin: 1rem 0;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
-  text-align: center;
+
+.empty-description {
+  color: $color-text-secondary;
+  font-size: $font-size-base;
+  line-height: 1.6;
+  max-width: 300px;
+  margin: 0 auto;
 }
-.modal-actions {
+
+/* Asset List Styles */
+.asset-list {
   display: flex;
+  flex-direction: column;
+  gap: $space-2; // Gap'i azalttım
+  
+  @media (min-width: 768px) {
+    gap: $space-3;
+  }
+}
+
+.asset-card {
+  border-radius: $radius-xl;
+  background: transparent;
+  transition: $transition-normal;
+  
+  &:hover .asset-card-content {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateX(4px);
+    box-shadow: $shadow-lg;
+  }
+}
+
+.asset-card-content {
+  display: flex;
+  align-items: center;
+  padding: $space-3; // Padding'i azalttım
+  background: $color-glass;
+  backdrop-filter: blur($blur-md);
+  border: 1px solid $color-border;
+  border-radius: $radius-lg; // Border radius'u küçülttüm
+  transition: $transition-normal;
+  position: relative;
+  overflow: hidden;
+  min-height: 60px; // Minimum yükseklik belirledim
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  }
+  
+  // Tablet ve üzeri için daha fazla padding
+  @media (min-width: 768px) {
+    padding: $space-4;
+    border-radius: $radius-xl;
+    min-height: auto;
+  }
+}
+
+.asset-icon {
+  width: 40px; // Mobilde küçük icon
+  height: 40px;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 1rem;
+  border-radius: $radius-md;
+  margin-right: $space-3; // Margin'i azalttım
+  box-shadow: $shadow-sm; // Shadow'u azalttım
+  font-size: 18px; // Font size'ı küçülttüm
+  flex-shrink: 0; // Icon boyutunu sabit tut
+  
+  // Tablet ve üzeri için büyük icon
+  @media (min-width: 768px) {
+    width: 48px;
+    height: 48px;
+    margin-right: $space-4;
+    font-size: 20px;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-md;
+  }
+  
+  &.icon-gold {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: $color-text-primary;
+  }
+  
+  &.icon-usd {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: $color-text-primary;
+  }
+  
+  &.icon-euro {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: $color-text-primary;
+  }
+  
+  &.icon-silver {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    color: $color-text-primary;
+  }
+  
+  &.icon-default {
+    background: $gradient-primary;
+    color: $color-text-primary;
+  }
 }
-.modal-confirm {
-  background: #ff4d4f;
-  color: #fff;
-  border: none;
-  border-radius: 0.5rem;
-  padding: 0.5rem 1.2rem;
-  font-weight: bold;
-  cursor: pointer;
-  font-size: 1rem;
+
+.asset-content {
+  flex: 1;
 }
-.modal-cancel {
-  background: #eee;
-  color: #333;
+
+.asset-name {
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  font-size: $font-size-sm; // Mobilde küçük font
+  margin-bottom: 2px; // Margin'i azalttım
+  line-height: 1.1; // Line height'ı azalttım
+  
+  @media (min-width: 768px) {
+    font-size: $font-size-base;
+    margin-bottom: $space-1;
+    line-height: 1.2;
+  }
+}
+
+.asset-amount {
+  font-size: $font-size-xs; // Mobilde daha küçük
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+  line-height: 1.1;
+  
+  @media (min-width: 768px) {
+    font-size: $font-size-sm;
+  }
+}
+
+.asset-value {
+  text-align: right;
+  margin-right: $space-2; // Margin'i azalttım
+  
+  @media (min-width: 768px) {
+    margin-right: $space-3;
+  }
+}
+
+.value-amount {
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  font-size: $font-size-sm; // Mobilde küçük font
+  line-height: 1.1; // Line height'ı azalttım
+  
+  @media (min-width: 768px) {
+    font-size: $font-size-base;
+    line-height: 1.2;
+  }
+}
+
+.delete-icon-btn {
+  background: none;
   border: none;
-  border-radius: 0.5rem;
-  padding: 0.5rem 1.2rem;
-  font-weight: bold;
+  outline: none;
   cursor: pointer;
-  font-size: 1rem;
+  color: $color-danger;
+  font-size: 18px; // Mobilde küçük icon
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-1; // Padding'i azalttım
+  border-radius: $radius-sm;
+  transition: $transition-normal;
+  flex-shrink: 0;
+  
+  &:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    transform: scale(1.1);
+  }
+  
+  @media (min-width: 768px) {
+    font-size: 20px;
+    padding: $space-2;
+    border-radius: $radius-md;
+  }
 }
 </style>

@@ -1,26 +1,114 @@
-// renkler
-$color-primary: #4CAF50;     // yeşil (seçili, kaydet)
-$color-muted: #9E9E9E;       // pasif
-$color-text: #212121;        // ana metin
-$color-bg: #ffffff;          // arkaplan
-$color-border: #E0E0E0;      // border
-$color-danger: #E53935;      // silme/uyarı
+// Modern Color Palette
+$color-primary: #6366f1;         // indigo
+$color-primary-light: #818cf8;   // light indigo
+$color-primary-dark: #4f46e5;    // dark indigo
+$color-secondary: #10b981;       // emerald
+$color-accent: #f59e0b;          // amber
+$color-danger: #ef4444;          // red
+$color-warning: #f97316;         // orange
+$color-success: #22c55e;         // green
 
-// tipografi
-$font-family-base: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+// Background & Surface Colors
+$color-bg-primary: #0f172a;      // slate-900
+$color-bg-secondary: #1e293b;    // slate-800
+$color-bg-tertiary: #334155;     // slate-700
+$color-surface: rgba(255, 255, 255, 0.1);
+$color-surface-hover: rgba(255, 255, 255, 0.15);
+$color-glass: rgba(255, 255, 255, 0.08);
+
+// Text Colors
+$color-text-primary: #f8fafc;    // slate-50
+$color-text-secondary: #cbd5e1;  // slate-300
+$color-text-tertiary: #94a3b8;   // slate-400
+$color-text-muted: #64748b;      // slate-500
+
+// Border & Divider
+$color-border: rgba(255, 255, 255, 0.1);
+$color-border-light: rgba(255, 255, 255, 0.05);
+
+// Gradients
+$gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+$gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+$gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+$gradient-warm: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+$gradient-cool: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+
+// Typography
+$font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+$font-size-xs: 12px;
+$font-size-sm: 14px;
 $font-size-base: 16px;
-$font-size-lg: 20px;
-$font-size-xl: 28px;
+$font-size-lg: 18px;
+$font-size-xl: 20px;
+$font-size-2xl: 24px;
+$font-size-3xl: 30px;
+$font-size-4xl: 36px;
 
-// spacing (8'lik ölçek)
+// Font Weights
+$font-weight-light: 300;
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+$font-weight-extrabold: 800;
+
+// Spacing (4px base unit)
+$space-0: 0;
 $space-1: 4px;
 $space-2: 8px;
 $space-3: 12px;
 $space-4: 16px;
-$space-5: 24px;
-$space-6: 32px;
+$space-5: 20px;
+$space-6: 24px;
+$space-8: 32px;
+$space-10: 40px;
+$space-12: 48px;
+$space-16: 64px;
+$space-20: 80px;
 
-// radius + shadow
+// Border Radius
+$radius-none: 0;
+$radius-xs: 2px;
 $radius-sm: 6px;
-$radius-md: 12px;
-$card-shadow: 0 6px 18px rgba(33,33,33,0.06);
+$radius-md: 8px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+$radius-2xl: 20px;
+$radius-3xl: 24px;
+$radius-full: 9999px;
+
+// Shadows
+$shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+$shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+$shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+
+// Glass Effect Shadows
+$shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+$shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+$shadow-glow-success: 0 0 20px rgba(34, 197, 94, 0.3);
+
+// Blur Effects
+$blur-xs: 2px;
+$blur-sm: 4px;
+$blur-md: 8px;
+$blur-lg: 12px;
+$blur-xl: 16px;
+$blur-2xl: 24px;
+
+// Transitions
+$transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+$transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+$transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+
+// Z-Index Scale
+$z-dropdown: 1000;
+$z-sticky: 1020;
+$z-fixed: 1030;
+$z-modal-backdrop: 1040;
+$z-modal: 1050;
+$z-popover: 1060;
+$z-tooltip: 1070;

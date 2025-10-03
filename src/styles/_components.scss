@@ -1,123 +1,475 @@
-@import 'variables';
+@import '_variables';
 
-/* Card */
+/* Modern Glass Cards */
 .card {
-  background: $color-bg;
+  background: $color-glass;
+  backdrop-filter: blur($blur-md);
+  -webkit-backdrop-filter: blur($blur-md);
   border: 1px solid $color-border;
-  border-radius: $radius-md;
-  box-shadow: $card-shadow;
-  padding: $space-4;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-glass;
+  padding: $space-6;
+  transition: $transition-normal;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-xl, $shadow-glow;
+    background: $color-surface-hover;
+  }
 }
 
-/* Buttons */
+.card-gradient {
+  background: $gradient-primary;
+  color: $color-text-primary;
+  
+  &::before {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  }
+}
+
+.card-success {
+  background: $gradient-success;
+  color: $color-text-primary;
+}
+
+.card-warm {
+  background: $gradient-warm;
+  color: $color-text-primary;
+}
+
+/* Modern Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: $space-2;
-  padding: $space-2 $space-4;
-  border-radius: $radius-sm;
+  padding: $space-3 $space-6;
+  border-radius: $radius-lg;
   border: 1px solid transparent;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
+  font-size: $font-size-sm;
   background: transparent;
-  color: $color-text;
-  transition: all 150ms ease;
-  &--primary {
-    background: $color-primary;
-    color: #fff;
-    border-color: $color-primary;
+  color: $color-text-primary;
+  transition: $transition-normal;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: $transition-normal;
   }
+  
+  &:hover::before {
+    left: 100%;
+  }
+  
+  &:active {
+    transform: translateY(1px);
+  }
+  
+  &--primary {
+    background: $gradient-primary;
+    color: $color-text-primary;
+    box-shadow: $shadow-glow;
+    
+    &:hover {
+      box-shadow: $shadow-lg, $shadow-glow;
+      transform: translateY(-1px);
+    }
+  }
+  
+  &--secondary {
+    background: $color-surface;
+    border: 1px solid $color-border;
+    color: $color-text-primary;
+    backdrop-filter: blur($blur-sm);
+    
+    &:hover {
+      background: $color-surface-hover;
+      border-color: $color-primary;
+    }
+  }
+  
   &--ghost {
     background: transparent;
-    border-color: $color-border;
-    color: $color-text;
+    border: 1px solid $color-border;
+    color: $color-text-secondary;
+    
+    &:hover {
+      background: $color-surface;
+      color: $color-text-primary;
+      border-color: $color-primary;
+    }
   }
+  
   &--danger {
-    background: $color-danger;
-    color: #fff;
-    border-color: $color-danger;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: $color-text-primary;
+    
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: $shadow-lg, 0 0 20px rgba(239, 68, 68, 0.3);
+    }
+  }
+  
+  &--success {
+    background: $gradient-success;
+    color: $color-text-primary;
+    box-shadow: $shadow-glow-success;
+    
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: $shadow-lg, $shadow-glow-success;
+    }
   }
 }
 
-/* Floating action button */
+/* Icon Buttons */
+.btn-icon {
+  padding: $space-3;
+  border-radius: $radius-full;
+  width: 44px;
+  height: 44px;
+  
+  &.btn-icon-lg {
+    width: 56px;
+    height: 56px;
+    padding: $space-4;
+  }
+}
+
+/* Floating Action Button */
 .fab {
   position: fixed;
   right: $space-4;
-  bottom: $space-4;
-  width: 56px;
+  bottom: 80px; // Navbar üstünde kalacak şekilde
+  width: 56px; // Mobilde biraz küçük
   height: 56px;
-  border-radius: 999px;
-  display: inline-grid;
-  place-items: center;
-  box-shadow: 0 8px 20px rgba(33,33,33,0.16);
-  background: $color-primary;
-  color: #fff;
+  border-radius: $radius-full;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $gradient-primary;
+  color: $color-text-primary;
   border: none;
   cursor: pointer;
-  z-index: 60;
+  box-shadow: $shadow-xl, $shadow-glow;
+  transition: $transition-normal;
+  z-index: $z-fixed;
+  
+  &:hover {
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: $shadow-2xl, $shadow-glow;
+  }
+  
+  &:active {
+    transform: scale(1.05);
+  }
+  
+  .material-symbols-outlined {
+    font-size: 24px; // Mobilde küçük icon
+  }
+  
+  // Tablet ve üzeri için büyük boyutlar
+  @media (min-width: 768px) {
+    right: $space-6;
+    bottom: calc($space-20 + $space-4);
+    width: 64px;
+    height: 64px;
+    
+    .material-symbols-outlined {
+      font-size: 28px;
+    }
+  }
 }
 
-/* Tabs */
+/* Modern Tabs */
 .tabs {
   display: flex;
-  gap: $space-2;
+  gap: $space-1;
+  padding: $space-2;
+  background: $color-surface;
+  border-radius: $radius-xl;
+  backdrop-filter: blur($blur-md);
+  border: 1px solid $color-border;
+  
   .tab {
-    padding: $space-2 $space-3;
-    border-radius: $radius-sm;
-    border: 1px solid $color-border;
+    flex: 1;
+    padding: $space-3 $space-4;
+    border-radius: $radius-lg;
     cursor: pointer;
+    font-weight: $font-weight-medium;
+    font-size: $font-size-sm;
+    text-align: center;
+    transition: $transition-normal;
+    position: relative;
+    
     &.is-active {
-      background: $color-primary;
-      color: #fff;
-      border-color: $color-primary;
+      background: $gradient-primary;
+      color: $color-text-primary;
+      box-shadow: $shadow-md;
+      transform: translateY(-1px);
     }
+    
     &.is-inactive {
-      background: transparent;
-      color: $color-text;
+      background: rgba(255, 255, 255, 0.08); // Daha belirgin arka plan
+      color: $color-text-primary; // Daha koyu text rengi
+      border: 1px solid rgba(255, 255, 255, 0.1); // Hafif border
+      
+      &:hover {
+        background: $color-surface-hover;
+        color: $color-text-primary;
+        border-color: $color-primary;
+        transform: translateY(-1px);
+      }
     }
   }
 }
 
-/* Inputs */
+/* Modern Inputs */
 .input {
   width: 100%;
-  padding: $space-3;
-  border-radius: $radius-sm;
+  padding: $space-4;
+  border-radius: $radius-lg;
   border: 1px solid $color-border;
+  background: $color-surface;
+  color: $color-text-primary;
   font-size: $font-size-base;
-  outline: none;
-  transition: border-color 120ms ease, box-shadow 120ms ease;
+  font-family: $font-family-base;
+  backdrop-filter: blur($blur-sm);
+  transition: $transition-normal;
+  
+  &::placeholder {
+    color: $color-text-muted;
+  }
+  
   &:focus {
+    outline: none;
     border-color: $color-primary;
-    box-shadow: 0 4px 12px rgba(76,175,80,0.12);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), $shadow-glow;
+    background: $color-surface-hover;
   }
 }
 
-/* List item for assets */
+.select {
+  @extend .input;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right $space-3 center;
+  background-repeat: no-repeat;
+  background-size: 16px 12px;
+  padding-right: $space-10;
+}
+
+/* Asset Items with Modern Design */
 .asset-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: $space-3;
-  padding: $space-3;
-  border-bottom: 1px dashed $color-border;
-  &:last-child { border-bottom: none; }
-  .meta {
-    display: flex;
-    flex-direction: column;
-    .label { font-weight: 600; }
-    .sub { font-size: 0.9rem; color: $color-muted; }
+  gap: $space-4;
+  padding: $space-4;
+  background: $color-glass;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  margin-bottom: $space-3;
+  backdrop-filter: blur($blur-sm);
+  transition: $transition-normal;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
   }
-  .actions { display:flex; gap:$space-2; }
+  
+  &:hover {
+    transform: translateX(4px);
+    background: $color-surface-hover;
+    border-color: $color-primary;
+    box-shadow: $shadow-md;
+  }
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  .asset-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: $radius-lg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    background: $gradient-primary;
+    color: $color-text-primary;
+    box-shadow: $shadow-md;
+  }
+  
+  .asset-content {
+    flex: 1;
+    
+    .asset-name {
+      font-weight: $font-weight-semibold;
+      color: $color-text-primary;
+      font-size: $font-size-base;
+      margin-bottom: $space-1;
+    }
+    
+    .asset-amount {
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
+    }
+  }
+  
+  .asset-value {
+    text-align: right;
+    
+    .value-amount {
+      font-weight: $font-weight-bold;
+      color: $color-text-primary;
+      font-size: $font-size-base;
+    }
+    
+    .value-change {
+      font-size: $font-size-xs;
+      margin-top: $space-1;
+      
+      &.positive {
+        color: $color-success;
+      }
+      
+      &.negative {
+        color: $color-danger;
+      }
+    }
+  }
 }
 
-/* small utilities */
-.text-muted { color: $color-muted; font-size: 0.9rem; }
-.flex { display:flex; }
-.center { align-items:center; justify-content:center; }
+/* Modal Components */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur($blur-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-modal-backdrop;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal {
+  background: $color-bg-secondary;
+  border: 1px solid $color-border;
+  border-radius: $radius-2xl;
+  padding: $space-8;
+  box-shadow: $shadow-2xl;
+  min-width: 320px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideInUp 0.3s ease-out;
+  
+  .modal-header {
+    margin-bottom: $space-6;
+    
+    .modal-title {
+      font-size: $font-size-xl;
+      font-weight: $font-weight-bold;
+      color: $color-text-primary;
+      margin-bottom: $space-2;
+    }
+    
+    .modal-subtitle {
+      color: $color-text-secondary;
+      font-size: $font-size-sm;
+    }
+  }
+  
+  .modal-body {
+    margin-bottom: $space-6;
+  }
+  
+  .modal-footer {
+    display: flex;
+    gap: $space-3;
+    justify-content: flex-end;
+  }
+}
+
+/* Utility Classes */
+.text-muted { color: $color-text-muted; font-size: $font-size-sm; }
+.text-secondary { color: $color-text-secondary; }
+.text-primary { color: $color-text-primary; }
+
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+
+.mt-0 { margin-top: $space-0; }
 .mt-1 { margin-top: $space-1; }
 .mt-2 { margin-top: $space-2; }
 .mt-3 { margin-top: $space-3; }
+.mt-4 { margin-top: $space-4; }
+.mt-5 { margin-top: $space-5; }
+.mt-6 { margin-top: $space-6; }
+.mt-8 { margin-top: $space-8; }
+
+.mb-0 { margin-bottom: $space-0; }
+.mb-1 { margin-bottom: $space-1; }
+.mb-2 { margin-bottom: $space-2; }
+.mb-3 { margin-bottom: $space-3; }
+.mb-4 { margin-bottom: $space-4; }
+.mb-5 { margin-bottom: $space-5; }
+.mb-6 { margin-bottom: $space-6; }
+.mb-8 { margin-bottom: $space-8; }
+
+.p-0 { padding: $space-0; }
 .p-1 { padding: $space-1; }
 .p-2 { padding: $space-2; }
+.p-3 { padding: $space-3; }
+.p-4 { padding: $space-4; }
+.p-5 { padding: $space-5; }
+.p-6 { padding: $space-6; }
+.p-8 { padding: $space-8; }
+
+.rounded { border-radius: $radius-md; }
+.rounded-lg { border-radius: $radius-lg; }
+.rounded-xl { border-radius: $radius-xl; }
+.rounded-full { border-radius: $radius-full; }
+
+.opacity-50 { opacity: 0.5; }
+.opacity-75 { opacity: 0.75; }
