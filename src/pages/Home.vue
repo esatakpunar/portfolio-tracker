@@ -287,6 +287,9 @@ export default {
       }
     }
   },
+  mounted() {
+    this.$store.dispatch('fetchPrices')
+  },
   methods: {
     getCurrencySymbol(currency) {
       const symbols = {
@@ -324,10 +327,7 @@ export default {
         this.$store.dispatch('decreaseItemAmount', { index: idx, amount: removeCount, description })
       })
     },
-    mounted() {
-      // Sayfa ilk açıldığında fiyatları fetch et
-      this.$store.dispatch('fetchPrices')
-    },
+
     resetAll() {
       if (confirm('Tüm veriler silinecek. Emin misiniz?')) {
         this.$store.dispatch('resetAll')
