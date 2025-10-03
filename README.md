@@ -16,6 +16,13 @@ A sophisticated, mobile-first portfolio tracking application built with Vue 3, f
 - **Smooth Animations**: Fluid transitions and delightful micro-interactions
 - **Mobile-First Responsive**: Optimized for mobile, beautiful on all devices
 
+### 🌍 Internationalization
+- **Multi-Language Support**: Turkish, English, German
+- **Auto Language Detection**: Automatically detects browser language
+- **Persistent Language Preference**: Saves language choice in localStorage
+- **Real-time Language Switching**: Instant UI updates when changing language
+- **Comprehensive Translation**: All UI elements, notifications, and forms
+
 ### 💎 Advanced Investment Tracking
 - **Multi-Asset Portfolio**: Gold (22/24 Ayar, Çeyrek, Tam), Silver, USD, EUR
 - **Smart Asset Grouping**: Automatic consolidation of same asset types
@@ -26,7 +33,7 @@ A sophisticated, mobile-first portfolio tracking application built with Vue 3, f
 ### 🔧 Technical Excellence
 - **Vue 3 Composition API**: Latest Vue.js with modern reactivity
 - **Vuex State Management**: Predictable state container
-- **Modular SCSS + TailwindCSS**: Scalable styling architecture
+- **Modular SCSS Architecture**: Scalable styling with modern CSS
 - **PWA Capabilities**: Install as native app, offline support
 - **Local Storage Persistence**: Zero-latency data access
 
@@ -36,6 +43,8 @@ A sophisticated, mobile-first portfolio tracking application built with Vue 3, f
 - **Settings Panel**: Price transparency and data management
 - **Swipe Gestures**: Natural touch interactions
 - **Sticky Header**: Always accessible actions
+- **Toast Notifications**: Success/error feedback system
+- **Language Settings**: Dropdown language selector in settings
 
 ## 🏗️ Tech Stack
 
@@ -46,7 +55,6 @@ A sophisticated, mobile-first portfolio tracking application built with Vue 3, f
 | **Vuex** | ^4.1.0 | State management pattern |
 | **Vue Router** | ^4.5.1 | Single-page application routing |
 | **SCSS** | ^1.93.2 | CSS preprocessor |
-| **TailwindCSS** | ^4.1.13 | Utility-first CSS framework |
 | **Axios** | ^1.12.2 | HTTP client for API calls |
 | **PWA Plugin** | ^1.0.3 | Progressive web app features |
 
@@ -59,11 +67,21 @@ src/
 │   ├── PortfolioSection.vue    # Main portfolio display
 │   ├── HistorySection.vue      # Transaction history
 │   ├── SettingsSection.vue     # App settings
+│   ├── ToastNotification.vue   # Toast notification system
 │   └── ...
 ├── pages/                   # Page components
 │   └── Home.vue               # Main application page
 ├── store/                   # Vuex store
 │   └── index.js               # Centralized state management
+├── localizations/           # Multi-language support
+│   ├── index.js               # Main localization file
+│   ├── tr.js                  # Turkish translations
+│   ├── en.js                  # English translations
+│   └── de.js                  # German translations
+├── mixins/                  # Vue mixins
+│   └── translation.js         # Translation mixin
+├── composables/             # Vue composables
+│   └── useToast.js            # Toast system composable
 ├── styles/                  # SCSS modules
 │   ├── _variables.scss        # Design system variables
 │   ├── _base.scss            # Base styles
@@ -132,10 +150,14 @@ npm run preview
 - 📊 **Transaction History**: Complete audit trail
 - ⚙️ **Settings Panel**: Price view and data management
 - 🔄 **Reset Capability**: Clean slate option
+- 🌐 **Language Persistence**: Remembers language preference
+- 🔔 **Smart Notifications**: Toast messages for user feedback
 
 ## 🚀 Roadmap
 
 ### Near Term (1-2 weeks)
+- [x] **Multi-language Support**: Turkish, English, German ✅
+- [x] **Toast Notifications**: Success/error feedback system ✅
 - [ ] Real-time price API integration  
 - [ ] Asset editing functionality
 - [ ] Data export (CSV/JSON)
@@ -161,7 +183,22 @@ npm run preview
 | **Currencies** | USD, EUR | Major forex pairs |
 | **Precious Metals** | Silver (gram-based) | Commodity tracking |
 
-## 🎨 Design System
+## � Internationalization
+
+The application supports three languages with seamless switching:
+
+- **🇹🇷 Turkish (Türkçe)**: Default language, comprehensive translation
+- **🇺🇸 English**: Full UI translation with proper currency formatting
+- **🇩🇪 German (Deutsch)**: Complete localization including number formats
+
+### Language Features
+- **Auto-detection**: Browser language preference detection
+- **localStorage Persistence**: Language choice saved locally
+- **Real-time Switching**: Instant UI updates without refresh
+- **Contextual Formatting**: Currency and date formatting per locale
+- **Toast Messages**: Localized notification system
+
+## �🎨 Design System
 
 - **Colors**: Dark theme with gradient accents
 - **Typography**: System fonts for optimal readability  

@@ -5,9 +5,9 @@
         <div class="modal-icon">
           <span class="material-symbols-outlined">delete</span>
         </div>
-        <h2 class="modal-title">Varlık Sil</h2>
+        <h2 class="modal-title">{{ $t('confirmDelete') }}</h2>
         <p class="modal-subtitle">
-          <strong>{{ priceLabel(item.type) }}</strong> için kaç adet/gram silmek istiyorsunuz?
+          {{ $t('confirmDeleteMessage') }}
         </p>
       </div>
       
@@ -15,7 +15,7 @@
         <div class="form-group">
           <label class="form-label">
             <span class="material-symbols-outlined">scale</span>
-            Silinecek Miktar
+            {{ $t('deleteAmount') }}
           </label>
           <input 
             type="number" 
@@ -23,20 +23,20 @@
             :min="1" 
             :max="maxAmount" 
             class="form-input"
-            placeholder="Miktar girin"
+            :placeholder="$t('amountPlaceholder')"
           />
-          <div class="form-helper">Maksimum: {{ maxAmount }} {{ getUnitText() }}</div>
+          <div class="form-helper">{{ $t('deleteAllAmount') }}: {{ maxAmount }} {{ getUnitText() }}</div>
         </div>
         
         <div class="form-group">
           <label class="form-label">
             <span class="material-symbols-outlined">description</span>
-            Açıklama (Opsiyonel)
+            {{ $t('deleteReason') }}
           </label>
           <input 
             v-model="deleteDescription" 
             class="form-input"
-            placeholder="Silme sebebini açıklayabilirsiniz..."
+            :placeholder="$t('deleteReasonPlaceholder')"
           />
         </div>
       </div>
@@ -44,11 +44,11 @@
       <div class="modal-footer">
         <button @click="$emit('close')" class="btn btn--secondary">
           <span class="material-symbols-outlined">close</span>
-          İptal
+          {{ $t('cancel') }}
         </button>
         <button @click="confirmDelete" class="btn btn--danger" :disabled="!canDelete">
           <span class="material-symbols-outlined">delete</span>
-          Sil
+          {{ $t('delete') }}
         </button>
       </div>
     </div>
@@ -83,13 +83,23 @@ export default {
     }
   },
   methods: {
-    priceLabel,
+    priceLabel(key) {
+      return priceLabel(key, this.$store.state.currentLanguage)
+    },
     getUnitText() {
       if (!this.item || !this.item.type) return ''
-      if (this.item.type === 'usd' || this.item.type === 'eur') return 'adet'
-      if (this.item.type === '24_ayar' || this.item.type === '22_ayar' || this.item.type === 'gumus') return 'gram'
-      if (this.item.type === 'ceyrek' || this.item.type === 'tam') return 'adet'
-      return this.item.unit || 'adet'
+      const unitTranslations = {
+        tr: { piece: 'adet', gram: 'gram' },
+        en: { piece: 'pcs', gram: 'gram' },
+        de: { piece: 'Stück', gram: 'Gramm' }
+      }
+      const lang = this.$store.state.currentLanguage
+      const translations = unitTranslations[lang] || unitTranslations.tr
+      
+      if (this.item.type === 'usd' || this.item.type === 'eur') return translations.piece
+      if (this.item.type === '24_ayar' || this.item.type === '22_ayar' || this.item.type === 'gumus') return translations.gram
+      if (this.item.type === 'ceyrek' || this.item.type === 'tam') return translations.piece
+      return this.item.unit || translations.piece
     },
     confirmDelete() {
       if (!this.canDelete) return

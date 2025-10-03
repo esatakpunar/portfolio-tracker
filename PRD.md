@@ -34,6 +34,9 @@ Odak: Glassmorphism tasarım dili ile modern premium ekonomi uygulaması deneyim
 - Ayarlar paneli ve veri sıfırlama
 - PWA (Progressive Web App) desteği
 - Local storage ile veri saklama
+- **Çok Dilli Destek (Türkçe, İngilizce, Almanca)**
+- **Otomatik dil tespiti ve localStorage kaydetme**
+- **Modern toast bildirim sistemi**
 
 🚧 **Geliştirme Aşamasında:**
 - API entegrasyonu (şimdilik sabit fiyatlar)
@@ -64,8 +67,16 @@ Odak: Glassmorphism tasarım dili ile modern premium ekonomi uygulaması deneyim
 
 ### 4.3 Settings (Ayarlar) Bölümü
 - **Fiyat Görüntüleme**: Tüm varlık fiyatlarının görüntülenmesi
+- **Dil Seçimi**: Dropdown ile Türkçe, İngilizce, Almanca arasında geçiş
 - **Veri Sıfırlama**: "Reset All" ile tüm portfolio verilerini temizleme
 - **Tehlikeli İşlem Onayı**: Kritik işlemler için kullanıcı onayı
+- **Toast Bildirimleri**: İşlem sonrası başarı/hata mesajları
+
+### 4.4 Lokalizasyon Sistemi
+- **Otomatik Dil Tespiti**: Tarayıcı dilini algılayarak otomatik dil seçimi
+- **localStorage Kaydetme**: Kullanıcının dil tercihini kalıcı olarak saklama
+- **Gerçek Zamanlı Çeviri**: Dil değişikliği anında tüm UI elementlerini güncelleme
+- **Kapsamlı Çeviri**: Tüm metin içerikleri, toast mesajları ve form elemanları
 
 5. Kullanıcı Akışı
 
@@ -105,7 +116,6 @@ Bottom Nav:
 | **Vite** | ^7.1.7 | Modern build tool ve dev server |
 | **SCSS** | ^1.93.2 | Modular styling sistemi |
 | **PWA Plugin** | ^1.0.3 | Progressive Web App özellikleri |
-| **TailwindCSS** | ^4.1.13 | Utility-first CSS framework |
 
 ### 6.2 Proje Yapısı
 ```
@@ -115,11 +125,21 @@ src/
 │   ├── PortfolioSection.vue # Portfolio içerik bölümü
 │   ├── HistorySection.vue   # Geçmiş işlemler bölümü
 │   ├── SettingsSection.vue  # Ayarlar bölümü
+│   ├── ToastNotification.vue # Toast bildirim sistemi
 │   └── [Other Components]
 ├── pages/              # Page components
 │   └── Home.vue           # Ana sayfa (tüm bölümleri içerir)
 ├── store/              # Vuex store
 │   └── index.js           # Ana store dosyası
+├── localizations/      # Çok dilli destek
+│   ├── index.js           # Ana lokalizasyon dosyası
+│   ├── tr.js              # Türkçe çeviriler
+│   ├── en.js              # İngilizce çeviriler
+│   └── de.js              # Almanca çeviriler
+├── mixins/             # Vue mixins
+│   └── translation.js     # Çeviri mixin'i
+├── composables/        # Vue composables
+│   └── useToast.js        # Toast sistemi composable
 ├── styles/             # SCSS modülleri
 │   ├── _variables.scss    # Design system değişkenleri
 │   ├── _base.scss         # Base styles
@@ -134,16 +154,19 @@ src/
 State:
 ├── items: []          # Portfolio varlıkları
 ├── prices: {}         # Varlık fiyatları (sabit)
-└── history: []        # İşlem geçmişi
+├── history: []        # İşlem geçmişi
+└── currentLanguage: 'tr' # Aktif dil
 
 Actions:
 ├── addItem()          # Varlık ekleme
 ├── removeItem()       # Varlık silme
 ├── fetchPrices()      # Fiyat güncelleme (şimdilik sabit)
-└── resetAll()         # Tüm veriyi sıfırlama
+├── resetAll()         # Tüm veriyi sıfırlama
+└── setLanguage()      # Dil değiştirme
 
 Getters:
-└── totalIn()          # Para birimi bazında toplam hesaplama
+├── totalIn()          # Para birimi bazında toplam hesaplama
+└── currentTranslations() # Aktif dil çevirileri
 ```
 
 7. UI/UX Design System
@@ -193,6 +216,8 @@ Responsive detayları optimize etmek
 9. Gelecek Roadmap
 
 ### 9.1 Kısa Vadeli (1-2 Hafta)
+- [x] **Multi-language Support**: Türkçe, İngilizce, Almanca ✅
+- [x] **Toast Notifications**: Başarı/hata bildirimleri ✅
 - [ ] **Real-time API Integration**: Canlı fiyat verisi
 - [ ] **Edit Asset Feature**: Varlık düzenleme
 - [ ] **Export Data**: CSV/JSON export

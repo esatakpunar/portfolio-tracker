@@ -13,7 +13,7 @@
           </div>
           <div class="asset-content">
             <div class="asset-name">{{ priceLabel(it.type) }}</div>
-            <div class="asset-amount">{{ formatAmount(it.amount) }} {{ it.unit || 'adet' }}</div>
+            <div class="asset-amount">{{ formatAmount(it.amount) }} {{ it.unit || getDefaultUnit(it.type) }}</div>
           </div>
           <div class="asset-value">
             <div class="value-amount">{{ it.value }}</div>
@@ -30,8 +30,8 @@
       <div class="empty-icon">
         <span class="material-symbols-outlined">account_balance_wallet</span>
       </div>
-      <h3 class="empty-title">Portföyünüz Boş</h3>
-      <p class="empty-description">Yatırımlarınızı takip etmek için + butonuna basarak varlık ekleyin.</p>
+      <h3 class="empty-title">{{ $t('noAssets') }}</h3>
+      <p class="empty-description">{{ $t('addFirstAsset') }}</p>
     </div>
     
     <!-- Modern Delete Modal -->
@@ -64,7 +64,9 @@ export default {
     }
   },
   methods: {
-    priceLabel,
+    priceLabel(key) {
+      return priceLabel(key, this.$store.state.currentLanguage)
+    },
     iconClass(type) {
       const map = {
         '24_ayar': 'paid', // gold
@@ -117,8 +119,24 @@ export default {
       })
       this.showDeleteModal = false
     },
+    getDefaultUnit(type) {
+      const unitTranslations = {
+        tr: { piece: 'adet', gram: 'gram' },
+        en: { piece: 'pcs', gram: 'gram' },
+        de: { piece: 'Stück', gram: 'Gramm' }
+      }
+      const lang = this.$store.state.currentLanguage
+      const translations = unitTranslations[lang] || unitTranslations.tr
+      
+      if (type === 'usd' || type === 'eur' || type === 'ceyrek' || type === 'tam') {
+        return translations.piece
+      }
+      return translations.gram
+    },
     formatAmount(amount) {
-      return amount.toLocaleString('tr-TR', { maximumFractionDigits: 4 })
+      const locale = this.$store.state.currentLanguage === 'tr' ? 'tr-TR' : 
+                     this.$store.state.currentLanguage === 'de' ? 'de-DE' : 'en-US'
+      return amount.toLocaleString(locale, { maximumFractionDigits: 4 })
     }
   }
 }

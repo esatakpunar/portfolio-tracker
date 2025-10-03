@@ -1,57 +1,46 @@
 <template>
-  <Transition name="toast" appear>
-    <div 
-      v-if="visible" 
-      :class="['toast', `toast--${type}`]"
-      @click="$emit('close')"
-    >
-      <div class="toast-icon">
-        <span class="material-symbols-outlined">{{ icon }}</span>
+  <div class="toast-container">
+    <TransitionGroup name="toast" tag="div">
+      <div
+        v-for="toast in toasts"
+        :key="toast.id"
+        :class="['toast', `toast--${toast.type}`]"
+      >
+        <div class="toast-icon">
+          <span class="material-symbols-outlined">{{ getIcon(toast.type) }}</span>
+        </div>
+        <div class="toast-content">
+          <p class="toast-message">{{ toast.message }}</p>
+        </div>
+        <button class="toast-close" @click.stop="removeToast(toast.id)">
+          <span class="material-symbols-outlined">close</span>
+        </button>
       </div>
-      <div class="toast-content">
-        <p class="toast-message">{{ message }}</p>
-      </div>
-      <button class="toast-close" @click.stop="$emit('close')">
-        <span class="material-symbols-outlined">close</span>
-      </button>
-    </div>
-  </Transition>
+    </TransitionGroup>
+  </div>
 </template>
 
 <script>
+import { useToast } from '../composables/useToast.js'
+
 export default {
   name: 'ToastNotification',
-  props: {
-    visible: {
-      type: Boolean,
-      default: false
-    },
-    message: {
-      type: String,
-      required: true
-    },
-    type: {
-      type: String,
-      default: 'info',
-      validator: (value) => ['success', 'error', 'warning', 'info'].includes(value)
+  setup() {
+    const { toasts, removeToast } = useToast()
+    return {
+      toasts,
+      removeToast
     }
   },
-  computed: {
-    icon() {
+  methods: {
+    getIcon(type) {
       const icons = {
         success: 'check_circle',
         error: 'error',
-        warning: 'warning',
+        warning: 'warning', 
         info: 'info'
       }
-      return icons[this.type]
-    }
-  },
-  mounted() {
-    if (this.visible) {
-      setTimeout(() => {
-        this.$emit('close')
-      }, 4000)
+      return icons[type] || 'info'
     }
   }
 }
@@ -60,7 +49,19 @@ export default {
 <style lang="scss" scoped>
 @import '../styles/variables';
 
+.toast-container {
+  position: fixed;
+  top: $space-4;
+  right: $space-4;
+  z-index: $z-tooltip;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  pointer-events: none;
+}
+
 .toast {
+  pointer-events: auto;
   position: fixed;
   top: $space-6;
   right: $space-6;

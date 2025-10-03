@@ -399,8 +399,6 @@
   animation: slideInUp 0.3s ease-out;
   
   .modal-header {
-    margin-bottom: $space-6;
-    
     .modal-title {
       font-size: $font-size-xl;
       font-weight: $font-weight-bold;
@@ -412,10 +410,6 @@
       color: $color-text-secondary;
       font-size: $font-size-sm;
     }
-  }
-  
-  .modal-body {
-    margin-bottom: $space-6;
   }
   
   .modal-footer {
@@ -473,3 +467,109 @@
 
 .opacity-50 { opacity: 0.5; }
 .opacity-75 { opacity: 0.75; }
+
+/* Settings Select */
+.settings-select {
+  background: $color-glass;
+  backdrop-filter: blur($blur-sm);
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: $space-3 $space-4;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  outline: none;
+  transition: $transition-normal;
+  width: 50%;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right $space-3 center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: $space-10;
+
+  &:focus {
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+    background: $color-surface-hover;
+  }
+
+  &:hover {
+    background: $color-surface-hover;
+  }
+}
+
+/* Settings Price Input */
+.settings-price-input {
+  background: $color-glass;
+  backdrop-filter: blur($blur-sm);
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: $space-3 $space-4;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  outline: none;
+  transition: $transition-normal;
+  width: 50%;
+
+  &:focus {
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+    background: $color-surface-hover;
+  }
+
+  &:hover {
+    background: $color-surface-hover;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+/* Language Selection */
+.language-row {
+  margin: $space-4 0;
+}
+
+.language-label {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+
+  .material-symbols-outlined {
+    font-size: 18px;
+    color: $color-primary;
+  }
+}
+
+.language-select {
+  background: $color-glass;
+  backdrop-filter: blur($blur-sm);
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: $space-3 $space-4;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  outline: none;
+  transition: $transition-normal;
+  width: 50%;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right $space-3 center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: $space-10;
+
+  &:focus {
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+    background: $color-surface-hover;
+  }
+
+  &:hover {
+    background: $color-surface-hover;
+  }
+}

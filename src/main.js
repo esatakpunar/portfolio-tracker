@@ -2,9 +2,17 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import translationMixin from './mixins/translation.js'
+import { useToast } from './composables/useToast.js'
 import './styles/main.scss'
 
 const app = createApp(App)
+
+// Global translation mixin
+app.mixin(translationMixin)
+
+// Global toast method
+app.config.globalProperties.$toast = useToast().showToast
 
 app.use(router)
 app.use(store)

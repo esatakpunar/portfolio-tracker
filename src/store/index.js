@@ -1,6 +1,7 @@
 
 import { createStore } from 'vuex'
 import axios from 'axios'
+import { translations, getInitialLanguage, saveLanguage } from '../localizations'
 
 const PRICES = {
   "22_ayar": 2300,
@@ -58,26 +59,19 @@ function savePrices(prices) {
   } catch (e) {}
 }
 
-export function priceLabel(key) {
-  const map = {
-    '22_ayar': 'Gram Altın (22 Ayar)',
-    '24_ayar': 'Gram Altın (24 Ayar)',
-    'ceyrek': 'Çeyrek Altın',
-    'tam': 'Tam Altın',
-    'usd': 'Dolar (USD)',
-    'eur': 'Euro (EUR)',
-    'gumus': 'Gümüş (gram)'
-  }
-  return map[key] || key
+export function priceLabel(key, language = 'tr') {
+  return translations[language]?.assetTypes[key] || key
 }
 
 export default createStore({
   state: {
     items: loadItems(),
     prices: loadPrices(),
-    history: loadHistory()
+    history: loadHistory(),
+    currentLanguage: getInitialLanguage()
   },
   getters: {
+    currentTranslations: state => translations[state.currentLanguage] || translations.tr,
     totalTL: state => state.items.reduce((sum, item) => sum + item.amount * state.prices[item.type], 0),
     totalIn: (state, getters) => (currency) => {
       const gramEquivalents = {
@@ -172,6 +166,10 @@ export default createStore({
       })
       saveItems(state.items)
       saveHistory(state.history)
+    },
+    SET_LANGUAGE(state, language) {
+      state.currentLanguage = language
+      saveLanguage(language)
     }
   },
   actions: {
@@ -184,6 +182,7 @@ export default createStore({
       await dispatch('fetchPrices')
     },
     decreaseItemAmount({ commit }, payload) { commit('DECREASE_ITEM_AMOUNT', payload) },
+    setLanguage({ commit }, language) { commit('SET_LANGUAGE', language) },
     async fetchPrices({ commit, state }) {
       try {
         const response = await axios.get('https://finans.truncgil.com/v4/today.json')

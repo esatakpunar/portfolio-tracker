@@ -5,15 +5,15 @@
         <div class="modal-icon">
           <span class="material-symbols-outlined">add_circle</span>
         </div>
-        <h3 class="modal-title">Yeni Varlık Ekle</h3>
-        <p class="modal-subtitle">Portföyünüze yeni bir yatırım ekleyin</p>
+        <h3 class="modal-title">{{ $t('addNewAsset') }}</h3>
+        <p class="modal-subtitle">{{ $t('addNewAssetSubtitle') }}</p>
       </div>
       
       <div class="modal-body">
         <div class="form-group">
-          <label>Varlık Türü</label>
+          <label>{{ $t('assetType') }}</label>
           <select v-model="addType" class="form-select">
-            <option disabled value="">Varlık türünü seçin</option>
+            <option disabled value="">{{ $t('selectAssetType') }}</option>
             <option v-for="(label, key) in assetTypes" :key="key" :value="key">
               {{ label }}
             </option>
@@ -21,32 +21,32 @@
         </div>
         
         <div v-if="showUnitInput" class="form-group">
-          <label>Birim</label>
+          <label>{{ $t('unit') }}</label>
           <input 
             v-model="addUnit" 
             class="form-input"
-            placeholder="Birim (gr, adet vb.)" 
+            :placeholder="$t('unitPlaceholder')" 
           />
         </div>
         
         <div class="form-group">
-          <label>Miktar</label>
+          <label>{{ $t('amount') }}</label>
           <input 
             type="number" 
             v-model.number="addAmount" 
             min="0.0001" 
             step="0.0001"
             class="form-input"
-            placeholder="0.0000"
+            :placeholder="$t('amountPlaceholder')"
           />
         </div>
         
         <div class="form-group">
-          <label>Açıklama <span class="optional">(opsiyonel)</span></label>
+          <label>{{ $t('description') }} <span class="optional">{{ $t('optional') }}</span></label>
           <input 
             v-model="addDescription" 
             class="form-input"
-            placeholder="Açıklama yazabilirsiniz"
+            :placeholder="$t('descriptionPlaceholder')"
           />
         </div>
       </div>
@@ -54,11 +54,11 @@
       <div class="modal-footer">
         <button @click="$emit('close')" class="btn btn--secondary">
           <span class="material-symbols-outlined">close</span>
-          İptal
+          {{ $t('cancel') }}
         </button>
         <button @click="confirmAdd" class="btn btn--primary" :disabled="!canAdd">
           <span class="material-symbols-outlined">add</span>
-          Ekle
+          {{ $t('add') }}
         </button>
       </div>
     </div>

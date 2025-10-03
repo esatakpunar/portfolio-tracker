@@ -8,7 +8,7 @@
             <span class="material-symbols-outlined fab-icon">add</span>
           </button>
         </div>
-        <h1 class="header-title">Portfolio</h1>
+        <h1 class="header-title">{{ $t('portfolio') }}</h1>
         <div class="flex-1 header-actions">
           <button v-if="activeTab === 'portfolio'" class="header-add-btn" @click="showAddModal = true">
             <span class="material-symbols-outlined fab-icon">add</span>
@@ -104,15 +104,15 @@
       <nav class="bottom-nav">
         <button :class="['nav-item', { 'nav-active': activeTab === 'portfolio' } ]" @click="activeTab = 'portfolio'">
           <span class="material-symbols-outlined">pie_chart</span>
-          <span class="nav-label">Portfolio</span>
+          <span class="nav-label">{{ $t('portfolio') }}</span>
         </button>
         <button :class="['nav-item', { 'nav-active': activeTab === 'history' } ]" @click="activeTab = 'history'">
           <span class="material-symbols-outlined">history</span>
-          <span class="nav-label">History</span>
+          <span class="nav-label">{{ $t('history') }}</span>
         </button>
         <button :class="['nav-item', { 'nav-active': activeTab === 'settings' } ]" @click="activeTab = 'settings'">
           <span class="material-symbols-outlined">settings</span>
-          <span class="nav-label">Settings</span>
+          <span class="nav-label">{{ $t('settings') }}</span>
         </button>
       </nav>
     </div>
@@ -263,15 +263,7 @@ export default {
     },
     assetTypes() {
       // Kullanıcıya gösterilecek varlık türleri
-      return {
-        '24_ayar': 'Gram Altın (24 Ayar)',
-        '22_ayar': 'Gram Altın (22 Ayar)',
-        'ceyrek': 'Çeyrek Altın',
-        'tam': 'Tam Altın',
-        'usd': 'Dolar (USD)',
-        'eur': 'Euro (EUR)',
-        'gumus': 'Gümüş (gram)'
-      }
+      return this.$translations.assetTypes
     },
     showUnitInput() {
       // Sadece bazı türler için birim sorulsun (ör: altınlar için 'gram', diğerleri için otomatik)
@@ -302,13 +294,7 @@ export default {
     },
     
     getCurrencyName(currency) {
-      const names = {
-        'TL': 'Turkish Lira',
-        'USD': 'US Dollar',
-        'EUR': 'Euro',
-        'ALTIN': 'Gold'
-      }
-      return names[currency] || currency
+      return this.$translations.currencies[currency] || currency
     },
     
     deleteItem({ item, amount, description }) {
@@ -326,12 +312,13 @@ export default {
       indicesToRemove.reverse().forEach(({ idx, removeCount }) => {
         this.$store.dispatch('decreaseItemAmount', { index: idx, amount: removeCount, description })
       })
+      this.$toast(this.$t('itemDeleted'), 'success')
     },
 
     resetAll() {
-      if (confirm('Tüm veriler silinecek. Emin misiniz?')) {
+      if (confirm(this.$t('confirmDeleteMessage'))) {
         this.$store.dispatch('resetAll')
-        this.$toast && this.$toast.success('Tüm veriler sıfırlandı!')
+        this.$toast(this.$t('allDataReset'), 'success')
       }
     },
     formatDate(dateStr) {
@@ -344,6 +331,7 @@ export default {
     handleAddItem(item) {
       this.$store.dispatch('addItem', item)
       this.showAddModal = false
+      this.$toast(this.$t('itemAdded'), 'success')
     },
     defaultUnitForType(type) {
       // Otomatik birim ataması
@@ -387,15 +375,7 @@ export default {
       return icons[currency] || '💰'
     },
     
-    getCurrencyName(currency) {
-      const names = {
-        'TL': 'Türk Lirası',
-        'USD': 'Amerikan Doları',
-        'EUR': 'Euro',
-        'ALTIN': 'Gram Altın'
-      }
-      return names[currency] || currency
-    },
+
     
     getTotalForCurrency(currency) {
       const value = this.totalIn(currency)

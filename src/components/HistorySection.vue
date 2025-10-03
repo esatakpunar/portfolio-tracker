@@ -1,6 +1,6 @@
 <template>
   <div class="history-section">
-    <h2 class="history-title">Geçmiş</h2>
+    <h2 class="history-title">{{ $t('historyTitle') }}</h2>
     <ul class="history-list">
       <li v-for="(h, i) in history.slice(0, 10)" :key="i" :class="['history-item', h.type]">
         <span class="history-type">
@@ -9,13 +9,12 @@
         </span>
         <span class="history-info">
           <b>{{ priceLabel(h.item.type) }}</b> {{ h.item.amount }} {{ h.item.unit }}
-          <span v-if="h.type === 'add'">eklendi</span>
-          <span v-else>çıkarıldı</span>
+          <span>{{ $t(`actionTypes.${h.type}`) }}</span>
           <div v-if="h.description" class="history-desc">{{ h.description }}</div>
         </span>
         <span class="history-date">{{ formatDate(h.date) }}</span>
       </li>
-      <li v-if="history.length === 0" class="history-item empty">Henüz işlem yok.</li>
+      <li v-if="history.length === 0" class="history-item empty">{{ $t('noHistory') }}</li>
     </ul>
   </div>
 </template>
@@ -26,10 +25,14 @@ export default {
     history: Array
   },
   methods: {
-    priceLabel,
+    priceLabel(key) {
+      return priceLabel(key, this.$store.state.currentLanguage)
+    },
     formatDate(dateStr) {
       const d = new Date(dateStr)
-      return d.toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' })
+      const locale = this.$store.state.currentLanguage === 'tr' ? 'tr-TR' : 
+                     this.$store.state.currentLanguage === 'de' ? 'de-DE' : 'en-US'
+      return d.toLocaleString(locale, { dateStyle: 'short', timeStyle: 'short' })
     }
   }
 }
