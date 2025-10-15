@@ -1,10 +1,10 @@
 <template>
   <div class="container">
     <h1>404</h1>
-    <p>Sayfa bulunamadı</p>
+    <p>{{ $t('pageNotFound') }}</p>
   </div>
   <router-link to="/">
-    <button class="btn btn--primary">Ana Sayfa</button>
+    <button class="btn btn--primary">{{ $t('goToHomePage') }}</button>
   </router-link>
 </template>
 

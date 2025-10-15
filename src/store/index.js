@@ -132,6 +132,20 @@ export default createStore({
       })
       saveHistory(state.history)
     },
+    UPDATE_ITEM_AMOUNT(state, { index, newAmount, description }) {
+      const oldAmount = state.items[index].amount
+      state.items[index].amount = newAmount
+      saveItems(state.items)
+      state.history.unshift({
+        type: 'update',
+        item: { ...state.items[index] },
+        oldAmount: oldAmount,
+        newAmount: newAmount,
+        date: new Date().toISOString(),
+        description: description || ''
+      })
+      saveHistory(state.history)
+    },
     REMOVE_ITEM(state, index) {
       const removed = state.items[index]
       state.items.splice(index, 1)
@@ -183,6 +197,7 @@ export default createStore({
   },
   actions: {
     addItem({ commit }, payload) { commit('ADD_ITEM', payload) },
+    updateItemAmount({ commit }, payload) { commit('UPDATE_ITEM_AMOUNT', payload) },
     removeItem({ commit }, index) { commit('REMOVE_ITEM', index) },
     updatePrice({ commit }, { key, value }) { commit('UPDATE_PRICE', { key, value }) },
     async resetAll({ commit, dispatch }) { 

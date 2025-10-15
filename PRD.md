@@ -36,7 +36,6 @@ Odak: Glassmorphism tasarım dili ile modern premium ekonomi uygulaması deneyim
 - Local storage ile veri saklama
 - **Çok Dilli Destek (Türkçe, İngilizce, Almanca)**
 - **Otomatik dil tespiti ve localStorage kaydetme**
-- **Modern toast bildirim sistemi**
 
 🚧 **Geliştirme Aşamasında:**
 - API entegrasyonu (şimdilik sabit fiyatlar)
@@ -70,13 +69,12 @@ Odak: Glassmorphism tasarım dili ile modern premium ekonomi uygulaması deneyim
 - **Dil Seçimi**: Dropdown ile Türkçe, İngilizce, Almanca arasında geçiş
 - **Veri Sıfırlama**: "Reset All" ile tüm portfolio verilerini temizleme
 - **Tehlikeli İşlem Onayı**: Kritik işlemler için kullanıcı onayı
-- **Toast Bildirimleri**: İşlem sonrası başarı/hata mesajları
 
 ### 4.4 Lokalizasyon Sistemi
 - **Otomatik Dil Tespiti**: Tarayıcı dilini algılayarak otomatik dil seçimi
 - **localStorage Kaydetme**: Kullanıcının dil tercihini kalıcı olarak saklama
 - **Gerçek Zamanlı Çeviri**: Dil değişikliği anında tüm UI elementlerini güncelleme
-- **Kapsamlı Çeviri**: Tüm metin içerikleri, toast mesajları ve form elemanları
+- **Kapsamlı Çeviri**: Tüm metin içerikleri ve form elemanları
 
 5. Kullanıcı Akışı
 
@@ -125,7 +123,6 @@ src/
 │   ├── PortfolioSection.vue # Portfolio içerik bölümü
 │   ├── HistorySection.vue   # Geçmiş işlemler bölümü
 │   ├── SettingsSection.vue  # Ayarlar bölümü
-│   ├── ToastNotification.vue # Toast bildirim sistemi
 │   └── [Other Components]
 ├── pages/              # Page components
 │   └── Home.vue           # Ana sayfa (tüm bölümleri içerir)
@@ -139,7 +136,6 @@ src/
 ├── mixins/             # Vue mixins
 │   └── translation.js     # Çeviri mixin'i
 ├── composables/        # Vue composables
-│   └── useToast.js        # Toast sistemi composable
 ├── styles/             # SCSS modülleri
 │   ├── _variables.scss    # Design system değişkenleri
 │   ├── _base.scss         # Base styles
@@ -217,7 +213,6 @@ Responsive detayları optimize etmek
 
 ### 9.1 Kısa Vadeli (1-2 Hafta)
 - [x] **Multi-language Support**: Türkçe, İngilizce, Almanca ✅
-- [x] **Toast Notifications**: Başarı/hata bildirimleri ✅
 - [ ] **Real-time API Integration**: Canlı fiyat verisi
 - [ ] **Edit Asset Feature**: Varlık düzenleme
 - [ ] **Export Data**: CSV/JSON export

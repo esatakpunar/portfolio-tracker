@@ -1,55 +1,41 @@
 <template>
-  <div class="portfolio-container">
-    <!-- Modern Asset List -->
-    <div v-if="itemsWithValue.length > 0" class="asset-list animate-fade-in">
-      <div
-        v-for="(it, i) in itemsWithValue"
-        :key="`${it.type}-${it.unit || 'default'}`"
-        class="asset-card"
-      >
-        <div class="asset-card-content">
-          <div :class="['asset-icon', iconBgClass(it.type)]">
-            <span class="material-symbols-outlined">{{ iconClass(it.type) }}</span>
-          </div>
-          <div class="asset-content">
-            <div class="asset-name">{{ priceLabel(it.type) }}</div>
-            <div class="asset-amount">{{ formatAmount(it.amount) }} {{ it.unit || getDefaultUnit(it.type) }}</div>
-          </div>
-          <div class="asset-value">
-            <div class="value-amount">{{ it.value }}</div>
-          </div>
-          <button class="delete-icon-btn" @click="openDeleteModal(it, i)">
-            <span class="material-symbols-outlined">delete</span>
-          </button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Empty State -->
-    <div v-else class="empty-state animate-fade-in">
-      <div class="empty-icon">
-        <span class="material-symbols-outlined">account_balance_wallet</span>
-      </div>
-      <h3 class="empty-title">{{ $t('noAssets') }}</h3>
-      <p class="empty-description">{{ $t('addFirstAsset') }}</p>
-    </div>
-    
-    <!-- Modern Delete Modal -->
-    <DeleteItemModal
-      :visible="showDeleteModal"
-      :item="deleteTarget"
-      :max-amount="deleteTarget.amount"
-      @close="closeDeleteModal"
-      @confirm="confirmDelete"
+  <div v-if="itemsWithValue.length > 0" class="asset-list">
+    <SwipeableAssetCard
+      v-for="(it, i) in itemsWithValue"
+      :key="`${it.type}-${it.unit || 'default'}`"
+      :ref="`swipeableCard-${i}`"
+      :item="it"
+      :on-edit="() => handleEdit(it, i)"
+      :on-delete="() => handleDelete(it, i)"
+      :on-swipeable-will-open="handleSwipeableWillOpen"
+      @card-click="openQuickAddModal"
     />
   </div>
+  
+  <div v-else class="empty-state">
+    <div class="empty-icon-container">
+      <span class="empty-icon">💰</span>
+    </div>
+    <h3 class="empty-state-title">{{ $t('noAssets') }}</h3>
+    <p class="empty-state-subtitle">{{ $t('addFirstAsset') }}</p>
+  </div>
+  
+  <DeleteItemModal
+    :visible="showDeleteModal"
+    :item="deleteTarget"
+    :max-amount="deleteTarget.amount"
+    @close="closeDeleteModal"
+    @confirm="confirmDelete"
+  />
 </template>
 
 <script>
 import DeleteItemModal from './DeleteItemModal.vue'
+import SwipeableAssetCard from './SwipeableAssetCard.vue'
 import { priceLabel } from '../store/index.js'
 export default {
-  components: { DeleteItemModal },
+  components: { DeleteItemModal, SwipeableAssetCard },
+  emits: ['update:selected', 'delete-item', 'open-quick-add'],
   props: {
     selected: String,
     tabs: Array,
@@ -60,51 +46,73 @@ export default {
     return {
       showDeleteModal: false,
       deleteTarget: {},
-      deleteIndex: null
+      deleteIndex: null,
+      currentlyOpenSwipeable: null
     }
   },
   methods: {
     priceLabel(key) {
       return priceLabel(key, this.$store.state.currentLanguage)
     },
-    iconClass(type) {
-      const map = {
-        '24_ayar': 'paid',
-        '22_ayar': 'paid',
-        'ceyrek': 'paid',
-        'tam': 'paid',
-        'usd': 'attach_money',
-        'eur': 'euro',
-        'tl': 'currency_lira',
-        'gumus': 'circle'
+    getAssetIcon(type) {
+      const iconMap = {
+        'tl': '₺',
+        'usd': '$',
+        'eur': '€',
+        'gumus': '₲',
+        'tam': '₲',
+        'ceyrek': '₲',
+        '22_ayar': '₲',
+        '24_ayar': '₲',
       }
-      return map[type] || 'help'
+      return iconMap[type] || '₲'
     },
-    mdiClass(type) {
-      const map = {
-        '24_ayar': 'mdi-gold',
-        '22_ayar': 'mdi-gold',
-        'ceyrek': 'mdi-gold',
-        'tam': 'mdi-gold',
-        'usd': 'mdi-currency-usd',
-        'eur': 'mdi-currency-eur',
-        'tl': 'mdi-currency-try',
-        'gumus': 'mdi-silver'
+    getAssetColor(type) {
+      const colorMap = {
+        'tl': '#dc2626',
+        'usd': '#10b981',
+        'eur': '#3b82f6',
+        'gumus': '#6b7280',
+        'tam': '#f59e0b',
+        'ceyrek': '#f59e0b',
+        '22_ayar': '#f59e0b',
+        '24_ayar': '#f59e0b',
       }
-      return map[type] || 'mdi-help'
+      return colorMap[type] || '#6366f1'
     },
-    iconBgClass(type) {
-      const map = {
-        '24_ayar': 'icon-gold',
-        '22_ayar': 'icon-gold',
-        'ceyrek': 'icon-gold',
-        'tam': 'icon-gold',
-        'usd': 'icon-usd',
-        'eur': 'icon-euro',
-        'tl': 'icon-tl',
-        'gumus': 'icon-silver'
+    handleEdit(item, idx) {
+      this.deleteTarget = item
+      this.deleteIndex = idx
+      this.showDeleteModal = true
+    },
+    handleDelete(item, idx) {
+      this.deleteTarget = item
+      this.deleteIndex = idx
+      this.showDeleteModal = true
+    },
+    handleSwipeableWillOpen(assetType) {
+      if (this.currentlyOpenSwipeable !== null && this.currentlyOpenSwipeable !== assetType) {
+        Object.keys(this.$refs).forEach(refKey => {
+          if (refKey.startsWith('swipeableCard-') && this.$refs[refKey] && this.$refs[refKey][0]) {
+            const cardComponent = this.$refs[refKey][0]
+            if (cardComponent.isSwiped && cardComponent.item.type === this.currentlyOpenSwipeable) {
+              cardComponent.close()
+            }
+          }
+        })
       }
-      return map[type] || 'icon-default'
+      this.currentlyOpenSwipeable = assetType
+    },
+    closeAllSwipeables() {
+      Object.keys(this.$refs).forEach(refKey => {
+        if (refKey.startsWith('swipeableCard-') && this.$refs[refKey] && this.$refs[refKey][0]) {
+          const cardComponent = this.$refs[refKey][0]
+          if (cardComponent.isSwiped) {
+            cardComponent.close()
+          }
+        }
+      })
+      this.currentlyOpenSwipeable = null
     },
     openDeleteModal(item, idx) {
       this.deleteTarget = item
@@ -122,19 +130,17 @@ export default {
       })
       this.showDeleteModal = false
     },
+    openQuickAddModal(item) {
+      this.$emit('open-quick-add', {
+        assetType: item.type,
+        currentAmount: item.amount
+      })
+    },
     getDefaultUnit(type) {
-      const unitTranslations = {
-        tr: { piece: 'adet', gram: 'gram' },
-        en: { piece: 'pcs', gram: 'gram' },
-        de: { piece: 'Stück', gram: 'Gramm' }
-      }
-      const lang = this.$store.state.currentLanguage
-      const translations = unitTranslations[lang] || unitTranslations.tr
-      
       if (type === 'usd' || type === 'eur' || type === 'tl' || type === 'ceyrek' || type === 'tam') {
-        return translations.piece
+        return this.$t('units.piece')
       }
-      return translations.gram
+      return this.$t('units.gram')
     },
     formatAmount(amount) {
       const locale = this.$store.state.currentLanguage === 'tr' ? 'tr-TR' : 
@@ -147,245 +153,51 @@ export default {
 <style lang="scss" scoped>
 @import '../styles/variables';
 
-.portfolio-container {
-  margin-top: $space-2;
-}
-
-/* Modern Empty State */
 .empty-state {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: $space-12 $space-6;
-  margin-top: $space-8;
-  background: $color-glass;
-  backdrop-filter: blur($blur-md);
-  border: 1px solid $color-border;
-  border-radius: $radius-2xl;
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  }
+  text-align: center;
+  margin-top: $space-6;
 }
 
-.empty-icon {
+.empty-icon-container {
   width: 80px;
   height: 80px;
-  margin: 0 auto $space-6 auto;
-  background: $gradient-cool;
   border-radius: $radius-full;
+  background: $color-glass;
+  border: 1px solid $color-border;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: $shadow-lg;
-  
-  .material-symbols-outlined {
-    font-size: 40px;
-    color: $color-text-primary;
-  }
+  margin-bottom: $space-6;
+  backdrop-filter: blur($blur-sm);
 }
 
-.empty-title {
+.empty-icon {
+  font-size: 40px;
+}
+
+.empty-state-title {
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
   color: $color-text-primary;
   margin-bottom: $space-3;
 }
 
-.empty-description {
-  color: $color-text-secondary;
+.empty-state-subtitle {
   font-size: $font-size-base;
+  color: $color-text-secondary;
   line-height: 1.6;
   max-width: 300px;
-  margin: 0 auto;
 }
 
-/* Asset List Styles */
 .asset-list {
   display: flex;
   flex-direction: column;
-  gap: $space-2;
-  
-  @media (min-width: 768px) {
-    gap: $space-3;
-  }
-}
-
-.asset-card {
-  border-radius: $radius-xl;
-  background: transparent;
-  transition: $transition-normal;
-  
-  &:hover .asset-card-content {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateX(4px);
-    box-shadow: $shadow-lg;
-  }
-}
-
-.asset-card-content {
-  display: flex;
-  align-items: center;
-  padding: $space-3;
-  background: $color-glass;
-  backdrop-filter: blur($blur-md);
-  border: 1px solid $color-border;
-  border-radius: $radius-lg;
-  transition: $transition-normal;
-  position: relative;
-  overflow: hidden;
-  min-height: 60px;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  }
-  
-  @media (min-width: 768px) {
-    padding: $space-4;
-    border-radius: $radius-xl;
-    min-height: auto;
-  }
-}
-
-.asset-icon {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: $radius-md;
-  margin-right: $space-3;
-  box-shadow: $shadow-sm;
-  font-size: 18px;
-  flex-shrink: 0;
-  
-  @media (min-width: 768px) {
-    width: 48px;
-    height: 48px;
-    margin-right: $space-4;
-    font-size: 20px;
-    border-radius: $radius-lg;
-    box-shadow: $shadow-md;
-  }
-  
-  &.icon-gold {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    color: $color-text-primary;
-  }
-  
-  &.icon-usd {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    color: $color-text-primary;
-  }
-  
-  &.icon-euro {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-    color: $color-text-primary;
-  }
-  
-  &.icon-tl {
-    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-    color: $color-text-primary;
-  }
-  
-  &.icon-silver {
-    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-    color: $color-text-primary;
-  }
-  
-  &.icon-default {
-    background: $gradient-primary;
-    color: $color-text-primary;
-  }
-}
-
-.asset-content {
-  flex: 1;
-}
-
-.asset-name {
-  font-weight: $font-weight-bold;
-  color: $color-text-primary;
-  font-size: $font-size-sm;
-  margin-bottom: 2px;
-  line-height: 1.1;
-  
-  @media (min-width: 768px) {
-    font-size: $font-size-base;
-    margin-bottom: $space-1;
-    line-height: 1.2;
-  }
-}
-
-.asset-amount {
-  font-size: $font-size-xs;
-  color: $color-text-secondary;
-  font-weight: $font-weight-medium;
-  line-height: 1.1;
-  
-  @media (min-width: 768px) {
-    font-size: $font-size-sm;
-  }
-}
-
-.asset-value {
-  text-align: right;
-  margin-right: $space-2;
-  
-  @media (min-width: 768px) {
-    margin-right: $space-3;
-  }
-}
-
-.value-amount {
-  font-weight: $font-weight-bold;
-  color: $color-text-primary;
-  font-size: $font-size-sm;
-  line-height: 1.1;
-  
-  @media (min-width: 768px) {
-    font-size: $font-size-base;
-    line-height: 1.2;
-  }
-}
-
-.delete-icon-btn {
-  background: none;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  color: $color-danger;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: $space-1;
-  border-radius: $radius-sm;
-  transition: $transition-normal;
-  flex-shrink: 0;
-  
-  &:hover {
-    background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
-    transform: scale(1.1);
-  }
-  
-  @media (min-width: 768px) {
-    font-size: 20px;
-    padding: $space-2;
-    border-radius: $radius-md;
-  }
+  gap: $space-3;
+  margin-top: $space-6;
 }
 </style>

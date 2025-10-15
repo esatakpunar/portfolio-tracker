@@ -1,11 +1,14 @@
 export default {
   portfolio: 'Portfolio',
+  portfolioSubtitle: 'Manage your assets',
   history: 'History',
+  historySubtitle: 'View transaction history',
   settings: 'Settings',
+  settingsSubtitle: 'Configure your preferences',
   
   assetTypes: {
-    '22_ayar': '22 Carat Gold (gram)',
-    '24_ayar': '24 Carat Gold (gram)',
+    '22_ayar': 'Gold 22K (gram)',
+    '24_ayar': 'Gold 24K (gram)',
     'ceyrek': 'Quarter Gold',
     'tam': 'Full Gold',
     'usd': 'Dollar (USD)',
@@ -20,6 +23,15 @@ export default {
     EUR: 'Euro',
     ALTIN: 'Gold (gram)'
   },
+  
+  units: {
+    piece: 'pcs',
+    gram: 'gram'
+  },
+  
+  amountToAdd: 'Amount to Add',
+  currentAmount: 'Current Amount',
+  amountToRemove: 'Amount to Remove',
   
   addNewAsset: 'Add New Asset',
   addNewAssetSubtitle: 'Add a new investment to your portfolio',
@@ -51,11 +63,19 @@ export default {
   
   historyTitle: 'Transaction History',
   noHistory: 'No transaction history yet',
+  noHistorySubtitle: 'Your transaction history will appear here',
+  yesterday: 'Yesterday',
+  daysAgo: 'days ago',
   
-  settingsTitle: 'Settings',
+  refresh: 'Refresh',
   refreshPrices: 'Refresh Prices',
   resetAllData: 'Reset All Data',
-  language: 'Language',
+  currentMarketPrices: 'Current market prices',
+  dangerZone: 'Danger Zone',
+  resetAllDataSubtitle: 'Reset all data',
+  
+  pageNotFound: 'Page not found',
+  goToHomePage: 'Go to Home Page',
   
   itemAdded: 'Asset added successfully',
   itemDeleted: 'Asset deleted successfully',

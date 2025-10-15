@@ -1,11 +1,14 @@
 export default {
   portfolio: 'Portföy',
+  portfolioSubtitle: 'Varlıklarınızı yönetin',
   history: 'Geçmiş',
+  historySubtitle: 'İşlem geçmişini görüntüleyin',
   settings: 'Ayarlar',
+  settingsSubtitle: 'Tercihlerinizi yapılandırın',
   
   assetTypes: {
-    '22_ayar': 'Gram Altın (22 Ayar)',
-    '24_ayar': 'Gram Altın (24 Ayar)',
+    '22_ayar': 'Gram Altın (22K)',
+    '24_ayar': 'Gram Altın (24K)',
     'ceyrek': 'Çeyrek Altın',
     'tam': 'Tam Altın',
     'usd': 'Dolar (USD)',
@@ -20,6 +23,15 @@ export default {
     EUR: 'Euro (EUR)',
     ALTIN: 'Altın (gram)'
   },
+  
+  units: {
+    piece: 'adet',
+    gram: 'gram'
+  },
+  
+  amountToAdd: 'Eklenecek Miktar',
+  currentAmount: 'Mevcut Miktar',
+  amountToRemove: 'Silinecek Miktar',
   
  
   addNewAsset: 'Yeni Varlık Ekle',
@@ -52,11 +64,19 @@ export default {
   
   historyTitle: 'İşlem Geçmişi',
   noHistory: 'Henüz işlem geçmişi yok',
+  noHistorySubtitle: 'İşlem geçmişiniz burada görünecek',
+  yesterday: 'Dün',
+  daysAgo: 'gün önce',
   
-  settingsTitle: 'Ayarlar',
-  refreshPrices: 'Fiyatları Yenile',
+  refresh: 'Yenile',
   resetAllData: 'Tüm Verileri Sıfırla',
-  language: 'Dil',
+  refreshPrices: 'Fiyatları Yenile',
+  currentMarketPrices: 'Güncel piyasa fiyatları',
+  dangerZone: 'Tehlikeli Bölge',
+  resetAllDataSubtitle: 'Tüm verileri sıfırla',
+  
+  pageNotFound: 'Sayfa bulunamadı',
+  goToHomePage: 'Ana Sayfa',
   
   itemAdded: 'Varlık başarıyla eklendi',
   itemDeleted: 'Varlık başarıyla silindi',

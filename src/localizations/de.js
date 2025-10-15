@@ -1,8 +1,10 @@
 export default {
   portfolio: 'Portfolio',
-  
+  portfolioSubtitle: 'Verwalten Sie Ihre Vermögenswerte',
   history: 'Verlauf',
+  historySubtitle: 'Transaktionsverlauf anzeigen',
   settings: 'Einstellungen',
+  settingsSubtitle: 'Konfigurieren Sie Ihre Einstellungen',
   
   assetTypes: {
     '22_ayar': '22 Karat Gold (Gramm)',
@@ -21,6 +23,15 @@ export default {
     EUR: 'Euro',
     ALTIN: 'Gold (Gramm)'
   },
+  
+  units: {
+    piece: 'Stück',
+    gram: 'Gramm'
+  },
+  
+  amountToAdd: 'Hinzuzufügende Menge',
+  currentAmount: 'Aktuelle Menge',
+  amountToRemove: 'Zu entfernende Menge',
   
   addNewAsset: 'Neuen Vermögenswert hinzufügen',
   addNewAssetSubtitle: 'Fügen Sie eine neue Investition zu Ihrem Portfolio hinzu',
@@ -52,11 +63,19 @@ export default {
   
   historyTitle: 'Transaktionsverlauf',
   noHistory: 'Noch kein Transaktionsverlauf',
+  noHistorySubtitle: 'Ihr Transaktionsverlauf wird hier angezeigt',
+  yesterday: 'Gestern',
+  daysAgo: 'Tage her',
   
-  settingsTitle: 'Einstellungen',
-  refreshPrices: 'Preise aktualisieren',
+  refresh: 'Aktualisieren',
   resetAllData: 'Alle Daten zurücksetzen',
-  language: 'Sprache',
+  refreshPrices: 'Preise aktualisieren',
+  currentMarketPrices: 'Aktuelle Marktpreise',
+  dangerZone: 'Gefahrenbereich',
+  resetAllDataSubtitle: 'Alle Daten zurücksetzen',
+  
+  pageNotFound: 'Seite nicht gefunden',
+  goToHomePage: 'Zur Startseite',
   
   itemAdded: 'Vermögenswert erfolgreich hinzugefügt',
   itemDeleted: 'Vermögenswert erfolgreich gelöscht',

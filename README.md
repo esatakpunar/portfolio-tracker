@@ -43,7 +43,6 @@ A sophisticated, mobile-first portfolio tracking application built with Vue 3, f
 - **Settings Panel**: Price transparency and data management
 - **Swipe Gestures**: Natural touch interactions
 - **Sticky Header**: Always accessible actions
-- **Toast Notifications**: Success/error feedback system
 - **Language Settings**: Dropdown language selector in settings
 
 ## 🏗️ Tech Stack
@@ -67,7 +66,6 @@ src/
 │   ├── PortfolioSection.vue    # Main portfolio display
 │   ├── HistorySection.vue      # Transaction history
 │   ├── SettingsSection.vue     # App settings
-│   ├── ToastNotification.vue   # Toast notification system
 │   └── ...
 ├── pages/                   # Page components
 │   └── Home.vue               # Main application page
@@ -81,7 +79,6 @@ src/
 ├── mixins/                  # Vue mixins
 │   └── translation.js         # Translation mixin
 ├── composables/             # Vue composables
-│   └── useToast.js            # Toast system composable
 ├── styles/                  # SCSS modules
 │   ├── _variables.scss        # Design system variables
 │   ├── _base.scss            # Base styles
@@ -151,13 +148,11 @@ npm run preview
 - ⚙️ **Settings Panel**: Price view and data management
 - 🔄 **Reset Capability**: Clean slate option
 - 🌐 **Language Persistence**: Remembers language preference
-- 🔔 **Smart Notifications**: Toast messages for user feedback
 
 ## 🚀 Roadmap
 
 ### Near Term (1-2 weeks)
 - [x] **Multi-language Support**: Turkish, English, German ✅
-- [x] **Toast Notifications**: Success/error feedback system ✅
 - [ ] Real-time price API integration  
 - [ ] Asset editing functionality
 - [ ] Data export (CSV/JSON)
@@ -196,7 +191,6 @@ The application supports three languages with seamless switching:
 - **localStorage Persistence**: Language choice saved locally
 - **Real-time Switching**: Instant UI updates without refresh
 - **Contextual Formatting**: Currency and date formatting per locale
-- **Toast Messages**: Localized notification system
 
 ## �🎨 Design System
 

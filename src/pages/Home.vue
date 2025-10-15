@@ -3,16 +3,32 @@
     <!-- Header -->
     <header class="app-header">
       <div class="header-container">
-        <div class="flex-1 header-actions">
-          <button v-if="activeTab === 'portfolio'" class="header-add-btn invisible-btn" tabindex="-1" aria-hidden="true">
-            <span class="material-symbols-outlined fab-icon">add</span>
-          </button>
+        <div class="header-content">
+          <h1 class="header-title">{{ getHeaderTitle() }}</h1>
+          <p class="header-subtitle">{{ getHeaderSubtitle() }}</p>
         </div>
-        <h1 class="header-title">{{ $t('portfolio') }}</h1>
-        <div class="flex-1 header-actions">
+        <div class="header-actions">
           <button v-if="activeTab === 'portfolio'" class="header-add-btn" @click="showAddModal = true">
             <span class="material-symbols-outlined fab-icon">add</span>
           </button>
+          <div v-if="activeTab === 'settings'" class="language-selector-header">
+            <button class="language-button" @click="toggleLanguageMenu">
+              <span class="language-icon">🌐</span>
+            </button>
+            
+            <div v-if="showLanguageMenu" class="language-menu">
+              <div 
+                v-for="lang in availableLanguages" 
+                :key="lang.code"
+                class="language-option"
+                :class="{ 'selected': selectedLanguage === lang.code }"
+                @click="selectLanguage(lang.code)"
+              >
+                <span class="language-flag">{{ lang.flag }}</span>
+                <span class="language-name">{{ lang.name }}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </header>
@@ -22,8 +38,16 @@
       @close="showAddModal = false"
       @add="handleAddItem"
     />
+    
+    <QuickAddModal
+      :visible="showQuickAddModal"
+      :asset-type="quickAddAssetType"
+      :current-amount="quickAddCurrentAmount"
+      @close="showQuickAddModal = false"
+      @add="handleQuickAdd"
+    />
     <!-- Main Content -->
-    <main class="main-content">
+    <main class="main-content" @scroll="handleScroll">
       <div class="content-container">
         <div v-if="activeTab === 'portfolio'" class="portfolio-content animate-fade-in">
           <!-- Total Section with Slider -->
@@ -32,11 +56,6 @@
                  @touchstart="handleTouchStart" 
                  @touchmove="handleTouchMove" 
                  @touchend="handleTouchEnd">
-              
-              <!-- Navigation Buttons -->
-              <button class="slider-nav slider-nav-left" @click="previousCurrency" :disabled="selectedIndex === 0">
-                <span class="material-symbols-outlined">chevron_left</span>
-              </button>
               
               <!-- Slider Container -->
               <div class="slider-container" ref="sliderContainer">
@@ -50,19 +69,44 @@
                     class="total-card"
                     :class="{ 'active': index === selectedIndex }"
                   >
-                    <div class="currency-badge">
-                      <div class="currency-symbol">{{ getCurrencySymbol(tab) }}</div>
-                      <div class="currency-name">{{ getCurrencyName(tab) }}</div>
+                    <div 
+                      class="gradient-overlay"
+                      :style="{ backgroundColor: getCurrencyColor(tab) }"
+                    ></div>
+                    
+                    <div class="total-card-content">
+                      <div class="total-card-header">
+                        <div 
+                          class="currency-icon-container"
+                          :style="{ 
+                            backgroundColor: getCurrencyColor(tab) + '20',
+                            borderColor: getCurrencyColor(tab) + '40'
+                          }"
+                        >
+                          <span 
+                            class="currency-icon-text"
+                            :style="{ color: getCurrencyColor(tab) }"
+                          >
+                            {{ getCurrencySymbol(tab) }}
+                          </span>
+                        </div>
+                        <div class="currency-info">
+                          <div class="total-label">{{ $t('total') }}</div>
+                          <div class="currency-label">{{ getCurrencyName(tab) }}</div>
+                        </div>
+                      </div>
+                      
+                      <div class="total-card-body">
+                        <div class="total-value-container">
+                          <span class="total-value">{{ getTotalValueForCurrency(tab) }}</span>
+                          <span class="total-currency-symbol">{{ getCurrencySymbol(tab) }}</span>
+                        </div>
+                        <div class="value-underline"></div>
+                      </div>
                     </div>
-                    <div class="total-value">{{ getTotalForCurrency(tab) }}</div>
                   </div>
                 </div>
               </div>
-              
-              <!-- Navigation Buttons -->
-              <button class="slider-nav slider-nav-right" @click="nextCurrency" :disabled="selectedIndex === tabs.length - 1">
-                <span class="material-symbols-outlined">chevron_right</span>
-              </button>
               
               <!-- Dots Indicator -->
               <div class="slider-dots">
@@ -80,12 +124,14 @@
           
           <!-- Portfolio Items -->
           <PortfolioSection
+            ref="portfolioSection"
             :selected="selected"
             :tabs="tabs"
             :items-with-value="groupedItemsWithValue"
             :total-formatted="totalFormatted"
             @update:selected="updateSelected"
             @delete-item="deleteItem"
+            @open-quick-add="handleOpenQuickAdd"
           />
         </div>
         <HistorySection
@@ -125,13 +171,16 @@ import PortfolioSection from '../components/PortfolioSection.vue'
 import HistorySection from '../components/HistorySection.vue'
 import SettingsSection from '../components/SettingsSection.vue'
 import AddItemModal from '../components/AddItemModal.vue'
+import QuickAddModal from '../components/QuickAddModal.vue'
+import { availableLanguages } from '../localizations'
 
 export default {
   components: {
     PortfolioSection,
     HistorySection,
     SettingsSection,
-    AddItemModal
+    AddItemModal,
+    QuickAddModal
   },
   data() {
     return {
@@ -139,13 +188,16 @@ export default {
       tabs: ['TL','USD','EUR','ALTIN'],
       activeTab: 'portfolio',
       showAddModal: false,
-      addType: '',
-      addUnit: '',
-      addAmount: 1,
+      showQuickAddModal: false,
+      quickAddAssetType: '',
+      quickAddCurrentAmount: 0,
       selectedIndex: 0,
       touchStartX: 0,
       touchStartY: 0,
-      isSwiping: false
+      isSwiping: false,
+      availableLanguages,
+      selectedLanguage: this.$store.state.currentLanguage,
+      showLanguageMenu: false
     }
   },
   computed: {
@@ -206,32 +258,6 @@ export default {
         }
       })
     },
-    itemsWithValue() {
-      return this.items.map(it => {
-        let value, formatted
-
-        if (this.selected === 'ALTIN') {
-          const goldEquivalent = this.getGoldEquivalent(it)
-          if (goldEquivalent) {
-            value = goldEquivalent.value
-            formatted = goldEquivalent.formatted
-          } else {
-            const valueTL = this.getValueInTL(it)
-            value = this.convertFromTL(valueTL, 'ALTIN')
-            formatted = this.formatValue(value, 'ALTIN')
-          }
-        } else {
-          const valueTL = this.getValueInTL(it)
-          value = this.convertFromTL(valueTL, this.selected)
-          formatted = this.formatValue(value, this.selected)
-        }
-
-        return {
-          ...it,
-          value: formatted
-        }
-      })
-    },
     assetTypes() {
       return this.$translations.assetTypes
     },
@@ -249,8 +275,17 @@ export default {
   },
   mounted() {
     this.$store.dispatch('fetchPrices')
+    document.addEventListener('click', this.handleClickOutside)
+  },
+  beforeDestroy() {
+    document.removeEventListener('click', this.handleClickOutside)
   },
   methods: {
+    handleScroll() {
+      if (this.$refs.portfolioSection) {
+        this.$refs.portfolioSection.closeAllSwipeables()
+      }
+    },
     getValueInTL(item) {
       if (item.type === 'tl') {
         return item.amount
@@ -309,7 +344,7 @@ export default {
         'TL': '₺',
         'USD': '$',
         'EUR': '€',
-        'ALTIN': '🥇'
+        'ALTIN': '₲'
       }
       return symbols[currency] || currency
     },
@@ -331,13 +366,11 @@ export default {
       indicesToRemove.reverse().forEach(({ idx, removeCount }) => {
         this.$store.dispatch('decreaseItemAmount', { index: idx, amount: removeCount, description })
       })
-      this.$toast(this.$t('itemDeleted'), 'success')
     },
 
     resetAll() {
       if (confirm(this.$t('confirmDeleteMessage'))) {
         this.$store.dispatch('resetAll')
-        this.$toast(this.$t('allDataReset'), 'success')
       }
     },
     formatDate(dateStr) {
@@ -350,13 +383,52 @@ export default {
     handleAddItem(item) {
       this.$store.dispatch('addItem', item)
       this.showAddModal = false
-      this.$toast(this.$t('itemAdded'), 'success')
     },
-    defaultUnitForType(type) {
-      if (type === 'usd' || type === 'eur') return 'adet'
-      if (type === '24_ayar' || type === '22_ayar' || type === 'gumus') return 'gr'
-      if (type === 'ceyrek' || type === 'tam') return 'adet'
-      return ''
+    handleOpenQuickAdd(data) {
+      this.quickAddAssetType = data.assetType
+      this.quickAddCurrentAmount = data.currentAmount
+      this.showQuickAddModal = true
+    },
+    handleQuickAdd(amount, description) {
+      const storeItems = this.$store.state.items
+      const defaultUnit = this.getDefaultUnit(this.quickAddAssetType)
+      
+      const existingItemIndex = storeItems.findIndex(item => 
+        item.type === this.quickAddAssetType && 
+        (item.unit === defaultUnit || (!item.unit && defaultUnit === this.getDefaultUnit(item.type)))
+      )
+      
+      if (existingItemIndex !== -1) {
+        const existingItem = storeItems[existingItemIndex]
+        const newAmount = existingItem.amount + amount
+        this.$store.dispatch('updateItemAmount', {
+          index: existingItemIndex,
+          newAmount: newAmount,
+          description: description
+        })
+      } else {
+        this.$store.dispatch('addItem', {
+          type: this.quickAddAssetType,
+          amount: amount,
+          description: description,
+          unit: defaultUnit
+        })
+      }
+      this.showQuickAddModal = false
+    },
+    getDefaultUnit(type) {
+      const unitTranslations = {
+        tr: { piece: 'adet', gram: 'gr' },
+        en: { piece: 'pcs', gram: 'gr' },
+        de: { piece: 'Stück', gram: 'gr' }
+      }
+      const lang = this.$store.state.currentLanguage
+      const translations = unitTranslations[lang] || unitTranslations.tr
+      
+      if (type === 'usd' || type === 'eur' || type === 'tl') return translations.piece
+      if (type === '24_ayar' || type === '22_ayar' || type === 'gumus') return translations.gram
+      if (type === 'ceyrek' || type === 'tam') return translations.piece
+      return translations.piece
     },
     
     nextCurrency() {
@@ -383,13 +455,7 @@ export default {
     },
     
     getCurrencyIcon(currency) {
-      const icons = {
-        'TL': '₺',
-        'USD': '$',
-        'EUR': '€',
-        'ALTIN': '🥇'
-      }
-      return icons[currency] || '💰'
+      return this.getCurrencySymbol(currency)
     },
     
 
@@ -406,6 +472,46 @@ export default {
         return value.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) + ' gr'
       }
       return value
+    },
+    getCurrencyColor(currency) {
+      const colors_map = {
+        'TL': '#dc2626',
+        'USD': '#10b981',
+        'EUR': '#3b82f6',
+        'ALTIN': '#f59e0b',
+      }
+      return colors_map[currency]
+    },
+    getTotalValueForCurrency(currency) {
+      const value = this.totalIn(currency)
+      return value.toLocaleString('tr-TR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
+    },
+    getHeaderTitle() {
+      switch (this.activeTab) {
+        case 'portfolio':
+          return this.$t('portfolio')
+        case 'history':
+          return this.$t('historyTitle')
+        case 'settings':
+          return this.$t('settings')
+        default:
+          return this.$t('portfolio')
+      }
+    },
+    getHeaderSubtitle() {
+      switch (this.activeTab) {
+        case 'portfolio':
+          return this.$t('portfolioSubtitle')
+        case 'history':
+          return this.$t('historySubtitle')
+        case 'settings':
+          return this.$t('settingsSubtitle')
+        default:
+          return this.$t('portfolioSubtitle')
+      }
     },
     
     handleTouchStart(event) {
@@ -446,6 +552,22 @@ export default {
       this.touchStartX = 0
       this.touchStartY = 0
       this.isSwiping = false
+    },
+    changeLanguage() {
+      this.$store.dispatch('setLanguage', this.selectedLanguage)
+    },
+    toggleLanguageMenu() {
+      this.showLanguageMenu = !this.showLanguageMenu
+    },
+    selectLanguage(langCode) {
+      this.selectedLanguage = langCode
+      this.$store.dispatch('setLanguage', langCode)
+      this.showLanguageMenu = false
+    },
+    handleClickOutside(event) {
+      if (!event.target.closest('.language-selector-header')) {
+        this.showLanguageMenu = false
+      }
     }
   }
 }
@@ -454,7 +576,6 @@ export default {
 <style lang="scss">
 @import '../styles/variables';
 
-/* Modern App Container */
 .app-container {
   display: flex;
   flex-direction: column;
@@ -465,16 +586,14 @@ export default {
   overflow-x: hidden;
 }
 
-/* Modern Header with Glass Effect */
 .app-header {
   position: sticky;
   top: 0;
-  background: $color-glass;
   backdrop-filter: blur($blur-xl);
   -webkit-backdrop-filter: blur($blur-xl);
   border-bottom: 1px solid $color-border;
   z-index: $z-sticky;
-  padding: $space-4 0;
+  padding: $space-4;
   transition: $transition-normal;
 }
 
@@ -488,18 +607,34 @@ export default {
   min-height: 44px;
 }
 
-.header-title {
-  font-weight: $font-weight-extrabold;
-  font-size: $font-size-2xl;
-  text-align: center;
+.header-content {
   flex: 1;
-  background: $gradient-primary;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.header-title {
+  font-weight: $font-weight-bold;
+  font-size: $font-size-3xl;
+  background: $color-text-primary;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: -0.02em;
-  margin: 0;
+  margin: 0 0 4px 0;
   line-height: 1;
+  text-align: left;
+}
+
+.header-subtitle {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+  margin: 0;
+  line-height: 1.2;
+  text-align: left;
 }
 
 .header-actions {
@@ -507,60 +642,125 @@ export default {
   justify-content: flex-end;
   align-items: center;
   min-width: 3.5rem;
+  gap: $space-2;
 }
 
-.header-add-btn {
-  background: $gradient-primary;
-  color: $color-text-primary;
-  border: none;
-  border-radius: $radius-full;
-  width: 44px;
-  height: 44px;
+.language-selector-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.language-button {
+  background: rgba(30, 41, 59, 0.8);
+  color: #6366f1;
+  border: 1px solid #6366f1;
+  border-radius: $radius-lg;
+  width: 52px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: $shadow-md, $shadow-glow;
   transition: $transition-normal;
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: $transition-normal;
-  }
+  backdrop-filter: blur($blur-sm);
   
   &:hover {
-    transform: scale(1.05) translateY(-1px);
-    box-shadow: $shadow-lg, $shadow-glow;
-    
-    &::before {
-      left: 100%;
-    }
+    background: rgba(30, 41, 59, 0.9);
+    border-color: #a78bfa;
+    color: #a78bfa;
+    transform: scale(1.05);
   }
   
   &:active {
-    transform: scale(1.02);
+    transform: scale(0.98);
+  }
+}
+
+.language-icon {
+  font-size: 24px;
+  font-weight: $font-weight-bold;
+}
+
+.language-menu {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $radius-lg;
+  overflow: hidden;
+  min-width: 150px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px);
+  z-index: 1000;
+}
+
+.language-option {
+  display: flex;
+  align-items: center;
+  padding: $space-3 $space-4;
+  cursor: pointer;
+  transition: $transition-normal;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+  
+  &.selected {
+    background: rgba(99, 102, 241, 0.15);
+    color: #a78bfa;
+  }
+}
+
+.language-flag {
+  font-size: $font-size-lg;
+  margin-right: $space-3;
+}
+
+.language-name {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.header-add-btn {
+  background: rgba(30, 41, 59, 0.8);
+  color: #6366f1;
+  border: 1px solid #6366f1;
+  border-radius: $radius-lg;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: $transition-normal;
+  backdrop-filter: blur($blur-sm);
+  
+  &:hover {
+    background: rgba(30, 41, 59, 0.9);
+    border-color: #a78bfa;
+    color: #a78bfa;
+    transform: scale(1.05);
+  }
+  
+  &:active {
+    transform: scale(0.98);
   }
 }
 
 .fab-icon {
-  font-size: 20px;
+  font-size: 24px;
+  font-weight: $font-weight-bold;
   z-index: 1;
 }
 
-.invisible-btn {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* Main Content */
 .main-content {
   flex-grow: 1;
   overflow-y: auto;
@@ -578,7 +778,6 @@ export default {
   padding: 0 $space-4;
 }
 
-/* Modern Total Slider */
 .total-section {
   text-align: center;
   padding: $space-4 0;
@@ -605,29 +804,15 @@ export default {
 
 .total-card {
   min-width: 100%;
-  background: $gradient-primary;
+  background: $color-glass;
+  backdrop-filter: blur($blur-md);
+  border: 1px solid $color-border;
   border-radius: $radius-2xl;
-  padding: $space-6;
-  box-shadow: $shadow-xl, $shadow-glow;
-  position: relative;
   overflow: hidden;
+  position: relative;
+  box-shadow: $shadow-lg;
   flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: $space-3;
-  min-height: 140px;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  }
+  min-height: 200px;
   
   &.active {
     transform: scale(1);
@@ -638,103 +823,119 @@ export default {
   }
   
   @media (min-width: 768px) {
-    padding: $space-8;
-    min-height: 160px;
+    min-height: 220px;
   }
 }
 
-.total-value {
-  font-size: $font-size-2xl;
-  font-weight: $font-weight-extrabold;
-  color: $color-text-primary;
-  margin: 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-  text-align: center;
-  
-  @media (min-width: 768px) {
-    font-size: $font-size-3xl;
-  }
-}
-
-.currency-badge {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $space-1;
-  margin-bottom: $space-2;
-}
-
-.currency-symbol {
-  font-size: $font-size-2xl;
-  font-weight: $font-weight-bold;
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  line-height: 1;
-  
-  @media (min-width: 768px) {
-    font-size: $font-size-3xl;
-  }
-}
-
-.currency-name {
-  font-size: $font-size-xs;
-  font-weight: $font-weight-medium;
-  color: rgba(255, 255, 255, 0.7);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  text-align: center;
-  line-height: 1;
-  
-  @media (min-width: 768px) {
-    font-size: $font-size-sm;
-  }
-}
-
-/* Navigation Buttons */
-.slider-nav {
+.gradient-overlay {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur($blur-sm);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: $radius-full;
-  width: 40px;
-  height: 40px;
+  top: 0;
+  right: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
+  opacity: 0.1;
+  transform: translate(40px, -40px);
+}
+
+.total-card-content {
+  padding: $space-6;
+  position: relative;
+  z-index: 1;
+  
+  @media (min-width: 768px) {
+    padding: $space-8;
+  }
+}
+
+.total-card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: $space-6;
+}
+
+.currency-icon-container {
+  width: 56px;
+  height: 56px;
+  border-radius: $radius-xl;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-right: $space-4;
+  border: 2px solid;
+}
+
+.currency-icon-text {
+  font-size: 28px;
+  font-weight: $font-weight-bold;
+}
+
+.currency-info {
+  flex: 1;
+  text-align: left;
+}
+
+.total-label {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  font-weight: $font-weight-medium;
+  margin-bottom: 2px;
+}
+
+.currency-label {
+  font-size: $font-size-lg;
   color: $color-text-primary;
-  cursor: pointer;
-  transition: $transition-normal;
-  z-index: 2;
+  font-weight: $font-weight-semibold;
+}
+
+.total-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.total-value-container {
+  display: flex;
+  align-items: baseline;
+}
+
+.total-value {
+  font-size: 42px;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  letter-spacing: -1px;
+  line-height: 50px;
   
-  &:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-50%) scale(1.05);
-  }
-  
-  &:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
-  
-  .material-symbols-outlined {
-    font-size: 20px;
-  }
-  
-  &.slider-nav-left {
-    left: $space-2;
-  }
-  
-  &.slider-nav-right {
-    right: $space-2;
+  @media (min-width: 768px) {
+    font-size: 48px;
+    line-height: 56px;
   }
 }
 
-/* Dots Indicator */
+.total-currency-symbol {
+  font-size: 28px;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  margin-left: $space-3;
+  line-height: 50px;
+  
+  @media (min-width: 768px) {
+    font-size: 32px;
+    line-height: 56px;
+  }
+}
+
+.value-underline {
+  width: 60px;
+  height: 4px;
+  background: $color-primary;
+  border-radius: $radius-full;
+  margin-top: $space-3;
+}
+
+
 .slider-dots {
   display: flex;
   justify-content: center;
@@ -761,7 +962,6 @@ export default {
   }
 }
 
-/* Modern Asset List */
 .asset-list {
   margin-top: $space-6;
   display: flex;
@@ -769,47 +969,6 @@ export default {
   gap: $space-3;
   position: relative;
   animation: fadeIn 0.8s ease-out;
-}
-
-.ios-swipe {
-  position: relative;
-  overflow: visible;
-  background: transparent;
-  border-radius: $radius-xl;
-}
-
-.swipe-delete-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  z-index: 0;
-  pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.1));
-  border-radius: $radius-xl;
-}
-
-.ios-delete-btn {
-  margin-right: $space-4;
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: $color-text-primary;
-  border: none;
-  border-radius: $radius-lg;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-bold;
-  padding: $space-3 $space-6;
-  box-shadow: $shadow-lg;
-  pointer-events: auto;
-  transition: $transition-normal;
-  
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: $shadow-xl, 0 0 20px rgba(239, 68, 68, 0.3);
-  }
 }
 
 .asset-card-content {
@@ -861,7 +1020,6 @@ export default {
   align-items: center;
   justify-content: center;
   border-radius: $radius-lg;
-  margin-right: $space-4;
   box-shadow: $shadow-md;
   font-size: 20px;
   transition: $transition-normal;
@@ -917,7 +1075,6 @@ export default {
   }
 }
 
-/* Delete Button */
 .delete-btn {
   position: absolute;
   right: $space-4;
@@ -941,7 +1098,6 @@ export default {
   }
 }
 
-/* Modern Bottom Navigation */
 .bottom-container {
   position: fixed;
   bottom: 0;
@@ -953,35 +1109,18 @@ export default {
 .bottom-nav {
   display: flex;
   justify-content: space-around;
-  padding: $space-2 0 calc($space-2 + env(safe-area-inset-bottom, 0px));
-  background: $color-glass;
-  backdrop-filter: blur($blur-xl);
-  -webkit-backdrop-filter: blur($blur-xl);
-  border-top: 1px solid $color-border;
+  background: #020617;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   margin: 0;
   border-radius: 0;
-  box-shadow: $shadow-xl;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
   position: relative;
-  min-height: 60px;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  }
+  height: 70px;
   
   @media (min-width: 768px) {
     margin: 0 $space-4 $space-4 $space-4;
     border-radius: $radius-2xl $radius-2xl $radius-xl $radius-xl;
-    padding: $space-3 0 calc($space-3 + env(safe-area-inset-bottom, 0));
-    
-    &::before {
-      border-radius: $radius-2xl $radius-2xl 0 0;
-    }
+    height: 70px;
   }
 }
 
@@ -989,32 +1128,21 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   background: none;
   border: none;
   outline: none;
   cursor: pointer;
   flex: 1;
-  padding: $space-1 $space-2;
+  padding: 0;
   border-radius: $radius-lg;
   transition: $transition-normal;
   position: relative;
   overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: $gradient-primary;
-    opacity: 0;
-    border-radius: $radius-lg;
-    transition: $transition-normal;
-  }
+  height: 70px;
   
   .material-symbols-outlined {
-    font-size: 20px;
+    font-size: 24px;
     margin-bottom: 2px;
     transition: $transition-normal;
     position: relative;
@@ -1022,54 +1150,47 @@ export default {
   }
   
   &:not(.nav-active) {
-    color: $color-text-muted;
+    color: #64748b;
     
     &:hover {
-      color: $color-text-secondary;
+      color: #cbd5e1;
       transform: translateY(-1px);
-      
-      &::before {
-        opacity: 0.05;
-      }
     }
   }
   
   @media (min-width: 768px) {
-    padding: $space-2;
+    height: 70px;
     
     .material-symbols-outlined {
       font-size: 24px;
-      margin-bottom: $space-1;
+      margin-bottom: 2px;
     }
   }
 }
 
 .nav-active {
-  color: $color-text-primary;
-  
-  &::before {
-    opacity: 0.15;
-  }
+  color: #667eea;
   
   .material-symbols-outlined {
-    text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+    text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
   }
 }
 
 .nav-label {
-  font-size: 10px;
-  font-weight: $font-weight-semibold;
+  font-size: 12px;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.02em;
   position: relative;
   z-index: 1;
+  margin-top: 0;
   
   @media (min-width: 768px) {
-    font-size: $font-size-xs;
+    font-size: 12px;
     letter-spacing: 0.05em;
+    margin-top: 0;
   }
 }
-/* Delete Icon Button */
 .delete-icon-btn {
   background: none;
   border: none;
@@ -1092,7 +1213,6 @@ export default {
   }
 }
 
-/* Modern History Section */
 .history-section {
   margin-top: $space-3;
   background: $color-glass;
@@ -1312,17 +1432,12 @@ export default {
   min-width: 85px;
   text-align: right;
   letter-spacing: 0.025em;
-  background: rgba(255, 255, 255, 0.02);
-  padding: 4px 8px;
-  border-radius: $radius-sm;
-  border: 1px solid rgba(255, 255, 255, 0.05);
   
   @media (min-width: 768px) {
     min-width: 100px;
     font-size: $font-size-xs;
   }
 }
-/* Modern Settings Section */
 .settings-section {
   margin-top: $space-3;
   background: $color-glass;
@@ -1537,7 +1652,6 @@ export default {
     transform: translateY(0);
   }
 }
-/* Modern Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -1577,17 +1691,6 @@ export default {
     border-radius: $radius-2xl $radius-2xl 0 0;
   }
   
-  .modal-title {
-    font-size: $font-size-xl;
-    font-weight: $font-weight-bold;
-    color: $color-text-primary;
-    margin-bottom: $space-6;
-    text-align: center;
-    background: $gradient-primary;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
   
   label {
     display: block;
@@ -1695,3 +1798,4 @@ export default {
   }
 }
 </style>
+
