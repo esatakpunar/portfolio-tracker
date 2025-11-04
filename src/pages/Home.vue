@@ -392,19 +392,21 @@ export default {
     handleQuickAdd(amount, description) {
       const storeItems = this.$store.state.items
       const defaultUnit = this.getDefaultUnit(this.quickAddAssetType)
-      
-      const existingItemIndex = storeItems.findIndex(item => 
-        item.type === this.quickAddAssetType && 
-        (item.unit === defaultUnit || (!item.unit && defaultUnit === this.getDefaultUnit(item.type)))
+
+      const existingItemIndex = storeItems.findIndex(item =>
+        item.type === this.quickAddAssetType &&
+        (item.unit === defaultUnit || !item.unit)
       )
-      
+
       if (existingItemIndex !== -1) {
         const existingItem = storeItems[existingItemIndex]
         const newAmount = existingItem.amount + amount
         this.$store.dispatch('updateItemAmount', {
           index: existingItemIndex,
           newAmount: newAmount,
-          description: description
+          description: description,
+          isAddition: true,
+          amountDelta: amount
         })
       } else {
         this.$store.dispatch('addItem', {
