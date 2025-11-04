@@ -39,28 +39,28 @@
       
       <div class="history-right">
         <div class="amount-container">
-          <div 
+          <div
             class="action-badge"
-            :style="{ 
-              backgroundColor: h.type === 'add' ? '#10b981' + '20' : '#ef4444' + '20' 
+            :style="{
+              backgroundColor: getHistoryColor(h.type) + '20'
             }"
           >
-            <span 
+            <span
               class="action-icon"
-              :style="{ 
-                color: h.type === 'add' ? '#10b981' : '#ef4444' 
+              :style="{
+                color: getHistoryColor(h.type)
               }"
             >
-              {{ h.type === 'add' ? '↑' : '↓' }}
+              {{ getHistoryIcon(h.type) }}
             </span>
           </div>
-          <span 
+          <span
             class="history-amount"
-            :style="{ 
-              color: h.type === 'add' ? '#10b981' : '#ef4444' 
+            :style="{
+              color: getHistoryColor(h.type)
             }"
           >
-            {{ h.type === 'add' ? '+' : '−' }}{{ formatAmount(h.item.amount) }}
+            {{ getHistoryPrefix(h) }}{{ formatAmount(getHistoryAmount(h)) }}
           </span>
         </div>
         <div class="history-date">{{ formatDate(h.date) }}</div>
@@ -77,6 +77,33 @@ export default {
   methods: {
     priceLabel(key) {
       return priceLabel(key, this.$store.state.currentLanguage)
+    },
+    getHistoryColor(type) {
+      if (type === 'add') return '#10b981'
+      if (type === 'remove') return '#ef4444'
+      if (type === 'update') return '#f59e0b'
+      return '#6366f1'
+    },
+    getHistoryIcon(type) {
+      if (type === 'add') return '↑'
+      if (type === 'remove') return '↓'
+      if (type === 'update') return '↔'
+      return '•'
+    },
+    getHistoryPrefix(historyEntry) {
+      if (historyEntry.type === 'add') return '+'
+      if (historyEntry.type === 'remove') return '−'
+      if (historyEntry.type === 'update') {
+        const delta = historyEntry.newAmount - historyEntry.oldAmount
+        return delta > 0 ? '+' : '−'
+      }
+      return ''
+    },
+    getHistoryAmount(historyEntry) {
+      if (historyEntry.type === 'update') {
+        return Math.abs(historyEntry.newAmount - historyEntry.oldAmount)
+      }
+      return historyEntry.item.amount
     },
     formatDate(dateStr) {
       const date = new Date(dateStr)

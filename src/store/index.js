@@ -132,18 +132,28 @@ export default createStore({
       })
       saveHistory(state.history)
     },
-    UPDATE_ITEM_AMOUNT(state, { index, newAmount, description }) {
+    UPDATE_ITEM_AMOUNT(state, { index, newAmount, description, isAddition, amountDelta }) {
       const oldAmount = state.items[index].amount
       state.items[index].amount = newAmount
       saveItems(state.items)
-      state.history.unshift({
-        type: 'update',
-        item: { ...state.items[index] },
-        oldAmount: oldAmount,
-        newAmount: newAmount,
-        date: new Date().toISOString(),
-        description: description || ''
-      })
+
+      if (isAddition && amountDelta) {
+        state.history.unshift({
+          type: 'add',
+          item: { ...state.items[index], amount: amountDelta },
+          date: new Date().toISOString(),
+          description: description || ''
+        })
+      } else {
+        state.history.unshift({
+          type: 'update',
+          item: { ...state.items[index] },
+          oldAmount: oldAmount,
+          newAmount: newAmount,
+          date: new Date().toISOString(),
+          description: description || ''
+        })
+      }
       saveHistory(state.history)
     },
     REMOVE_ITEM(state, index) {
@@ -176,14 +186,22 @@ export default createStore({
     DECREASE_ITEM_AMOUNT(state, { index, amount, description }) {
       const item = state.items[index]
       if (!item) return
+
+      const removedAmount = Math.min(item.amount, amount)
+
       if (item.amount > amount) {
         item.amount -= amount
       } else {
         state.items.splice(index, 1)
       }
+
       state.history.unshift({
         type: 'remove',
-        item: { ...item, amount },
+        item: {
+          type: item.type,
+          unit: item.unit,
+          amount: removedAmount
+        },
         date: new Date().toISOString(),
         description: description || ''
       })
